@@ -13,7 +13,7 @@ const Hero = () => {
   return (
     <section
       id="hero"
-      className="min-h-screen-dynamic flex flex-col justify-center items-center relative overflow-hidden bg-gradient-to-br from-white to-secondary/30"
+      className="min-h-screen-dynamic flex flex-col justify-center items-center relative overflow-hidden bg-gradient-to-br from-white to-secondary/30 pt-24 md:pt-28"
     >
       {/* Decorative elements */}
       <div className="absolute inset-0 overflow-hidden">
