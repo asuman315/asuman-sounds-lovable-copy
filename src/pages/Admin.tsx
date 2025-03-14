@@ -18,7 +18,7 @@ import {
   FormDescription,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import RichTextEditor from "@/components/RichTextEditor";
 import {
   Card,
   CardContent,
@@ -166,13 +166,13 @@ const AdminPage = () => {
                         <FormItem>
                           <FormLabel>Description</FormLabel>
                           <FormDescription>
-                            Supports rich text formatting. Use Markdown syntax for formatting.
+                            Use the rich text editor to format your product description.
                           </FormDescription>
                           <FormControl>
-                            <Textarea
-                              placeholder="Describe your audio product. Use Markdown for rich text formatting."
-                              className="min-h-[150px] font-mono text-sm"
-                              {...field}
+                            <RichTextEditor
+                              value={field.value}
+                              onChange={field.onChange}
+                              placeholder="Describe your audio product..."
                             />
                           </FormControl>
                           <FormMessage />
