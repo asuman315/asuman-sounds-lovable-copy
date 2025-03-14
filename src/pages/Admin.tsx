@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -164,6 +163,16 @@ const AdminPage = () => {
     }
   };
 
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (value.length > 70) {
+      // Truncate and update form
+      form.setValue('title', value.slice(0, 70));
+    } else {
+      form.setValue('title', value);
+    }
+  };
+
   const onSubmit = async (values: AudioProductFormValues) => {
     if (imageFiles.length === 0) {
       toast.error("Please upload at least one product image");
@@ -273,7 +282,15 @@ const AdminPage = () => {
                         <FormItem>
                           <FormLabel>Title</FormLabel>
                           <FormControl>
-                            <Input placeholder="Enter product title" {...field} />
+                            <Input 
+                              placeholder="Enter product title" 
+                              {...field} 
+                              onChange={(e) => {
+                                handleTitleChange(e);
+                                field.onChange(e);
+                              }}
+                              maxLength={70}
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>

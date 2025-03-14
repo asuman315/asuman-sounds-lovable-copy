@@ -154,7 +154,8 @@ const RichTextEditor = ({
         </MenuButton>
       </div>
       <EditorContent editor={editor} className="overflow-hidden" />
-      <style jsx global>{`
+      <style>
+        {`
         .ProseMirror p {
           margin: 1em 0;
         }
@@ -216,7 +217,8 @@ const RichTextEditor = ({
         .ProseMirror em {
           font-style: italic;
         }
-      `}</style>
+        `}
+      </style>
     </div>
   );
 };
