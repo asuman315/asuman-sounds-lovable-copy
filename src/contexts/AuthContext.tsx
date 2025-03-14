@@ -3,6 +3,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { Session, User } from "@supabase/supabase-js";
 import { useToast } from "@/components/ui/use-toast";
+import { toast as sonnerToast } from "sonner";
 
 type AuthContextType = {
   session: Session | null;
@@ -53,23 +54,24 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         password,
       });
       if (error) throw error;
-      toast({
-        title: "Welcome back!",
-        description: "You have successfully signed in.",
+      
+      sonnerToast.success("Welcome back!", {
+        description: "You have successfully signed in."
       });
+      
       return { error: null };
     } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Authentication error",
-        description: error.message || "Failed to sign in",
+      sonnerToast.error("Authentication error", {
+        description: error.message || "Failed to sign in"
       });
+      
       return { error };
     }
   };
 
   const signUp = async (email: string, password: string, firstName?: string, lastName?: string) => {
     try {
+      // Save first_name and last_name to user metadata
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -83,18 +85,31 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       
       if (error) throw error;
       
-      toast({
-        title: "Account created!",
-        description: "Your account has been successfully created.",
+      // After successful signup, also update profiles table directly to ensure data is saved
+      if (data?.user?.id && (firstName || lastName)) {
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .update({
+            first_name: firstName,
+            last_name: lastName
+          })
+          .eq('id', data.user.id);
+          
+        if (profileError) {
+          console.error('Error updating profile:', profileError);
+        }
+      }
+      
+      sonnerToast.success("Account created!", {
+        description: "Your account has been successfully created."
       });
       
       return { error: null, data };
     } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Registration error",
-        description: error.message || "Failed to create account",
+      sonnerToast.error("Registration error", {
+        description: error.message || "Failed to create account"
       });
+      
       return { error, data: null };
     }
   };
@@ -102,15 +117,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const signOut = async () => {
     try {
       await supabase.auth.signOut();
-      toast({
-        title: "Signed out",
-        description: "You have been signed out successfully.",
+      sonnerToast.success("Signed out", {
+        description: "You have been signed out successfully."
       });
     } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to sign out",
+      sonnerToast.error("Error", {
+        description: "Failed to sign out"
       });
     }
   };
