@@ -173,6 +173,7 @@
   background-color: hsl(142, 76%, 96%);
   border-color: hsl(142, 76%, 90%);
   color: hsl(142, 76%, 24%);
+  box-shadow: 0 2px 8px rgba(22, 163, 74, 0.15);
 }
 
 [data-sonner-toast][data-type="error"] {
