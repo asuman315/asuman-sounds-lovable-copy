@@ -112,13 +112,13 @@ const Features = () => {
                 </button>
               </div>
               
-              <div className="w-48 h-48 md:w-56 md:h-56 relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-accent/20 rounded-full animate-pulse-slow"></div>
-                <div className="absolute inset-4 bg-black rounded-full"></div>
-                <div className="absolute inset-[18px] border-2 border-white/10 rounded-full"></div>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-white font-bold text-xl">X7</span>
-                </div>
+              <div className="relative w-full md:w-1/2 h-56 md:h-64 flex items-center justify-center">
+                <img 
+                  src="/lovable-uploads/310ec201-7407-47d1-a118-e2bf47c2279a.png" 
+                  alt="Asuman X7 Pro Headphones and Speaker Set" 
+                  className="max-w-full max-h-full object-contain transform hover:scale-105 transition-transform duration-500"
+                />
+                <div className="absolute -inset-4 bg-primary/10 rounded-full filter blur-xl opacity-30 animate-pulse-slow"></div>
               </div>
             </div>
             <div className="absolute bottom-4 right-4 glass-card py-2 px-4 text-foreground/90 font-medium text-sm">
