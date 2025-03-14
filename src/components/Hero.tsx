@@ -1,8 +1,12 @@
 
 import AnimatedElement from "./AnimatedElement";
 import { ChevronDown } from "lucide-react";
+import { Link } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Hero = () => {
+  const { user } = useAuth();
+  
   const scrollToNext = () => {
     const featuresSection = document.getElementById("features");
     if (featuresSection) {
@@ -45,9 +49,20 @@ const Hero = () => {
 
           <AnimatedElement animation="fade-in" delay={700}>
             <div className="flex flex-col sm:flex-row gap-4 mt-4">
-              <button className="btn-primary">
-                Shop Collection
-              </button>
+              {user ? (
+                <button className="btn-primary">
+                  Shop Collection
+                </button>
+              ) : (
+                <>
+                  <Link to="/signup" className="btn-primary">
+                    Sign Up
+                  </Link>
+                  <Link to="/login" className="btn-secondary">
+                    Sign In
+                  </Link>
+                </>
+              )}
               <button className="btn-secondary">
                 Learn More
               </button>

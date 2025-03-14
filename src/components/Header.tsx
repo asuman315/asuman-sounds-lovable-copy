@@ -1,11 +1,22 @@
 
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
-import { Menu, X } from "lucide-react";
+import { Menu, X, User, LogOut } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -37,6 +48,11 @@ const Header = () => {
       setIsMobileMenuOpen(false);
       document.body.style.overflow = "";
     }
+  };
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate("/");
   };
 
   const navItems = [
@@ -76,7 +92,35 @@ const Header = () => {
           ))}
         </nav>
 
-        <button className="hidden md:block btn-primary">Shop Now</button>
+        {/* Authentication Buttons */}
+        <div className="hidden md:flex items-center space-x-4">
+          {user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="relative rounded-full">
+                  <User size={18} />
+                  <span className="ml-2">Account</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={handleSignOut}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Sign out</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <>
+              <Button variant="ghost" size="sm" asChild>
+                <Link to="/login">Sign In</Link>
+              </Button>
+              <Button size="sm" asChild>
+                <Link to="/signup">Sign Up</Link>
+              </Button>
+            </>
+          )}
+          <Button className="hidden md:block">Shop Now</Button>
+        </div>
 
         {/* Mobile Navigation Toggle */}
         <button
@@ -109,6 +153,40 @@ const Header = () => {
               {item.name}
             </button>
           ))}
+          
+          {user ? (
+            <button
+              onClick={handleSignOut}
+              className="text-xl font-medium py-2 border-b border-gray-100 flex items-center"
+            >
+              <LogOut className="mr-2 h-5 w-5" />
+              Sign Out
+            </button>
+          ) : (
+            <>
+              <Link
+                to="/login"
+                className="text-xl font-medium py-2 border-b border-gray-100"
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  document.body.style.overflow = "";
+                }}
+              >
+                Sign In
+              </Link>
+              <Link
+                to="/signup"
+                className="text-xl font-medium py-2 border-b border-gray-100"
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  document.body.style.overflow = "";
+                }}
+              >
+                Sign Up
+              </Link>
+            </>
+          )}
+          
           <button className="btn-primary mt-auto mb-8">Shop Now</button>
         </div>
       </div>
