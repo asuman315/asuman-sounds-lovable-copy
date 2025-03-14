@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { ImagePlus, Check, DollarSign } from "lucide-react";
+import { ImagePlus, Check, DollarSign, XCircle, Plus } from "lucide-react";
 import { toast } from "sonner";
 import AnimatedElement from "@/components/AnimatedElement";
 import { Button } from "@/components/ui/button";
@@ -34,7 +34,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import ProtectedRoute from "@/components/ProtectedRoute";
+
+// Currency symbols mapping
+const currencySymbols: Record<string, string> = {
+  USD: "$",
+  EUR: "€",
+  GBP: "£",
+  JPY: "¥",
+  CAD: "C$",
+  AUD: "A$"
+};
 
 // Form validation schema
 const audioProductSchema = z.object({
@@ -54,15 +65,22 @@ const audioProductSchema = z.object({
     message: "Stock count must be a non-negative number",
   }),
   isFeatured: z.boolean().default(false),
-  // We'll handle file validation separately
+}).refine((data) => {
+  // Skip validation if any field is empty
+  if (!data.comparablePrice || !data.originalPrice) return true;
+  
+  return Number(data.comparablePrice) > Number(data.originalPrice);
+}, {
+  message: "Comparable price must be higher than original price",
+  path: ["comparablePrice"]
 });
 
 type AudioProductFormValues = z.infer<typeof audioProductSchema>;
 
 const AdminPage = () => {
   const navigate = useNavigate();
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<AudioProductFormValues>({
@@ -79,25 +97,46 @@ const AdminPage = () => {
     },
   });
 
+  const watchCurrency = form.watch("currency");
+  const currentCurrencySymbol = currencySymbols[watchCurrency] || "$";
+
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      setImageFile(file);
+    if (e.target.files && e.target.files.length > 0) {
+      const newFiles = Array.from(e.target.files);
       
-      // Create image preview
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        if (e.target && typeof e.target.result === "string") {
-          setImagePreview(e.target.result);
-        }
-      };
-      reader.readAsDataURL(file);
+      // Limit to 5 images total
+      if (imageFiles.length + newFiles.length > 5) {
+        toast.error("You can upload a maximum of 5 images");
+        return;
+      }
+      
+      setImageFiles(prev => [...prev, ...newFiles]);
+      
+      // Create image previews
+      const newPreviews: string[] = [];
+      newFiles.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          if (e.target && typeof e.target.result === "string") {
+            newPreviews.push(e.target.result);
+            if (newPreviews.length === newFiles.length) {
+              setImagePreviews(prev => [...prev, ...newPreviews]);
+            }
+          }
+        };
+        reader.readAsDataURL(file);
+      });
     }
   };
 
+  const removeImage = (index: number) => {
+    setImageFiles(prev => prev.filter((_, i) => i !== index));
+    setImagePreviews(prev => prev.filter((_, i) => i !== index));
+  };
+
   const onSubmit = async (values: AudioProductFormValues) => {
-    if (!imageFile) {
-      toast.error("Please upload a product image");
+    if (imageFiles.length === 0) {
+      toast.error("Please upload at least one product image");
       return;
     }
 
@@ -106,15 +145,15 @@ const AdminPage = () => {
     try {
       // In a real application, you would upload files and create the product in your database
       console.log("Form values:", values);
-      console.log("Image file:", imageFile);
+      console.log("Image files:", imageFiles);
       
       // Simulate API call with timeout
       await new Promise(resolve => setTimeout(resolve, 1500));
       
       toast.success("Product added successfully");
       form.reset();
-      setImageFile(null);
-      setImagePreview(null);
+      setImageFiles([]);
+      setImagePreviews([]);
     } catch (error) {
       console.error("Error submitting form:", error);
       toast.error("Failed to add product. Please try again.");
@@ -195,7 +234,9 @@ const AdminPage = () => {
                                   className="pl-8"
                                   {...field} 
                                 />
-                                <DollarSign className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                <span className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground">
+                                  {currentCurrencySymbol}
+                                </span>
                               </div>
                             </FormControl>
                             <FormMessage />
@@ -249,7 +290,9 @@ const AdminPage = () => {
                                   className="pl-8"
                                   {...field} 
                                 />
-                                <DollarSign className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                <span className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground">
+                                  {currentCurrencySymbol}
+                                </span>
                               </div>
                             </FormControl>
                             <FormMessage />
@@ -264,7 +307,7 @@ const AdminPage = () => {
                           <FormItem>
                             <FormLabel>Comparable Price</FormLabel>
                             <FormDescription>
-                              Optional. Competitive market price.
+                              Optional. Competitive market price. Must be higher than original price.
                             </FormDescription>
                             <FormControl>
                               <div className="relative">
@@ -274,7 +317,9 @@ const AdminPage = () => {
                                   className="pl-8"
                                   {...field} 
                                 />
-                                <DollarSign className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                <span className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground">
+                                  {currentCurrencySymbol}
+                                </span>
                               </div>
                             </FormControl>
                             <FormMessage />
@@ -326,41 +371,88 @@ const AdminPage = () => {
                     </div>
 
                     <div>
-                      <FormLabel className="block mb-2">Product Image</FormLabel>
-                      <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-gray-300 px-6 py-10 text-center hover:bg-gray-50 focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 transition-all duration-200">
-                        <div className="flex flex-col items-center justify-center">
-                          {imagePreview ? (
-                            <div className="relative mb-4 w-full max-w-[200px] aspect-square">
-                              <img 
-                                src={imagePreview} 
-                                alt="Preview" 
-                                className="w-full h-full object-cover rounded-md shadow-sm" 
-                              />
+                      <FormLabel className="block mb-2">Product Images (max 5)</FormLabel>
+                      {form.formState.errors.root && (
+                        <Alert variant="destructive" className="mb-4">
+                          <AlertDescription>
+                            {form.formState.errors.root.message}
+                          </AlertDescription>
+                        </Alert>
+                      )}
+                      
+                      {imagePreviews.length > 0 && (
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 mb-4">
+                          {imagePreviews.map((preview, index) => (
+                            <div key={index} className="relative group">
+                              <div className="relative aspect-square rounded-md overflow-hidden border border-gray-200">
+                                <img 
+                                  src={preview} 
+                                  alt={`Preview ${index + 1}`} 
+                                  className="w-full h-full object-cover rounded-md" 
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => removeImage(index)}
+                                  className="absolute top-1 right-1 bg-black/70 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                                  aria-label="Remove image"
+                                >
+                                  <XCircle className="h-4 w-4" />
+                                </button>
+                              </div>
+                              {index === 0 && (
+                                <span className="absolute top-1 left-1 bg-primary text-white text-xs px-2 py-1 rounded-md">
+                                  Main
+                                </span>
+                              )}
                             </div>
-                          ) : (
-                            <ImagePlus className="h-10 w-10 text-muted-foreground mb-2" />
-                          )}
-                          <div className="flex text-sm text-muted-foreground">
+                          ))}
+                          
+                          {imagePreviews.length < 5 && (
                             <label
-                              htmlFor="image-upload"
-                              className="relative cursor-pointer rounded-md bg-transparent font-medium text-primary hover:text-primary/80 focus-within:outline-none focus-within:ring-2 focus-within:ring-primary"
+                              htmlFor="additional-image-upload"
+                              className="cursor-pointer border-2 border-dashed border-gray-300 rounded-md flex flex-col items-center justify-center aspect-square text-muted-foreground hover:bg-gray-50 transition-colors"
                             >
-                              <span>{imageFile ? "Change image" : "Upload image"}</span>
+                              <Plus className="h-8 w-8 mb-1" />
+                              <span className="text-sm">Add Image</span>
                               <input
-                                id="image-upload"
-                                name="image-upload"
+                                id="additional-image-upload"
                                 type="file"
                                 className="sr-only"
                                 accept="image/*"
                                 onChange={handleImageChange}
                               />
                             </label>
-                          </div>
-                          <p className="text-xs text-muted-foreground mt-1">
-                            PNG, JPG or WEBP up to 5MB
-                          </p>
+                          )}
                         </div>
-                      </div>
+                      )}
+                      
+                      {imagePreviews.length === 0 && (
+                        <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-gray-300 px-6 py-10 text-center hover:bg-gray-50 focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 transition-all duration-200">
+                          <div className="flex flex-col items-center justify-center">
+                            <ImagePlus className="h-10 w-10 text-muted-foreground mb-2" />
+                            <div className="flex text-sm text-muted-foreground">
+                              <label
+                                htmlFor="image-upload"
+                                className="relative cursor-pointer rounded-md bg-transparent font-medium text-primary hover:text-primary/80 focus-within:outline-none focus-within:ring-2 focus-within:ring-primary"
+                              >
+                                <span>Upload images</span>
+                                <input
+                                  id="image-upload"
+                                  name="image-upload"
+                                  type="file"
+                                  className="sr-only"
+                                  accept="image/*"
+                                  multiple
+                                  onChange={handleImageChange}
+                                />
+                              </label>
+                            </div>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              PNG, JPG or WEBP up to 5MB each (max 5 images)
+                            </p>
+                          </div>
+                        </div>
+                      )}
                     </div>
 
                     <div className="flex justify-end pt-4">
