@@ -9,6 +9,86 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      product_images: {
+        Row: {
+          created_at: string
+          id: string
+          image_url: string
+          is_main: boolean
+          product_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          image_url: string
+          is_main?: boolean
+          product_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          image_url?: string
+          is_main?: boolean
+          product_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_images_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      products: {
+        Row: {
+          comparable_price: number | null
+          created_at: string
+          currency: string
+          description: string
+          id: string
+          is_featured: boolean
+          original_price: number | null
+          price: number
+          stock_count: number
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          comparable_price?: number | null
+          created_at?: string
+          currency?: string
+          description: string
+          id?: string
+          is_featured?: boolean
+          original_price?: number | null
+          price: number
+          stock_count?: number
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          comparable_price?: number | null
+          created_at?: string
+          currency?: string
+          description?: string
+          id?: string
+          is_featured?: boolean
+          original_price?: number | null
+          price?: number
+          stock_count?: number
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string

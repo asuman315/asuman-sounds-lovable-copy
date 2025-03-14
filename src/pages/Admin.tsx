@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -6,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { ImagePlus, Check, DollarSign, XCircle, Plus } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 import AnimatedElement from "@/components/AnimatedElement";
 import { Button } from "@/components/ui/button";
 import {
@@ -36,6 +36,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import { v4 as uuidv4 } from "uuid";
 
 // Currency symbols mapping
 const currencySymbols: Record<string, string> = {
@@ -134,6 +135,32 @@ const AdminPage = () => {
     setImagePreviews(prev => prev.filter((_, i) => i !== index));
   };
 
+  const uploadImageToSupabase = async (file: File, productId: string): Promise<string | null> => {
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${uuidv4()}.${fileExt}`;
+      const filePath = `${productId}/${fileName}`;
+      
+      const { error: uploadError } = await supabase.storage
+        .from('product_images')
+        .upload(filePath, file);
+        
+      if (uploadError) {
+        console.error('Error uploading image:', uploadError);
+        throw uploadError;
+      }
+      
+      const { data } = supabase.storage
+        .from('product_images')
+        .getPublicUrl(filePath);
+        
+      return data.publicUrl;
+    } catch (error) {
+      console.error('Error in image upload:', error);
+      return null;
+    }
+  };
+
   const onSubmit = async (values: AudioProductFormValues) => {
     if (imageFiles.length === 0) {
       toast.error("Please upload at least one product image");
@@ -143,17 +170,69 @@ const AdminPage = () => {
     setIsSubmitting(true);
 
     try {
-      // In a real application, you would upload files and create the product in your database
-      console.log("Form values:", values);
-      console.log("Image files:", imageFiles);
+      const user = await supabase.auth.getUser();
+      if (!user.data.user) {
+        toast.error("You must be logged in to add a product");
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Insert product into Supabase
+      const { data: product, error: productError } = await supabase
+        .from('products')
+        .insert({
+          title: values.title,
+          description: values.description,
+          price: Number(values.price),
+          currency: values.currency,
+          original_price: values.originalPrice ? Number(values.originalPrice) : null,
+          comparable_price: values.comparablePrice ? Number(values.comparablePrice) : null,
+          stock_count: Number(values.stockCount),
+          is_featured: values.isFeatured,
+          user_id: user.data.user.id
+        })
+        .select()
+        .single();
+
+      if (productError) {
+        console.error('Error creating product:', productError);
+        throw productError;
+      }
+
+      // Upload images and create product_images records
+      const productId = product.id;
+      const imageUploadPromises = imageFiles.map(async (file, index) => {
+        const imageUrl = await uploadImageToSupabase(file, productId);
+        if (!imageUrl) {
+          throw new Error(`Failed to upload image ${index + 1}`);
+        }
+        
+        // Create product_images record
+        const { error: imageError } = await supabase
+          .from('product_images')
+          .insert({
+            product_id: productId,
+            image_url: imageUrl,
+            is_main: index === 0 // First image is the main image
+          });
+          
+        if (imageError) {
+          console.error('Error creating image record:', imageError);
+          throw imageError;
+        }
+        
+        return imageUrl;
+      });
       
-      // Simulate API call with timeout
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      await Promise.all(imageUploadPromises);
       
       toast.success("Product added successfully");
       form.reset();
       setImageFiles([]);
       setImagePreviews([]);
+      
+      // Optionally navigate to product page or listing
+      // navigate(`/products/${productId}`);
     } catch (error) {
       console.error("Error submitting form:", error);
       toast.error("Failed to add product. Please try again.");
