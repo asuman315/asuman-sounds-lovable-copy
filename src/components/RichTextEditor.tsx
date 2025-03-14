@@ -37,13 +37,19 @@ const RichTextEditor = ({
     editorProps: {
       attributes: {
         class:
-          "min-h-[150px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+          "min-h-[150px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 prose prose-sm max-w-none",
       },
     },
     onUpdate: ({ editor }) => {
       onChange(editor.getHTML());
     },
   });
+
+  React.useEffect(() => {
+    if (editor && value !== editor.getHTML()) {
+      editor.commands.setContent(value);
+    }
+  }, [value, editor]);
 
   if (!editor) {
     return null;
@@ -148,6 +154,69 @@ const RichTextEditor = ({
         </MenuButton>
       </div>
       <EditorContent editor={editor} className="overflow-hidden" />
+      <style jsx global>{`
+        .ProseMirror p {
+          margin: 1em 0;
+        }
+        .ProseMirror h1 {
+          font-size: 1.5em;
+          font-weight: bold;
+          margin-top: 1em;
+          margin-bottom: 0.5em;
+        }
+        .ProseMirror h2 {
+          font-size: 1.3em;
+          font-weight: bold;
+          margin-top: 1em;
+          margin-bottom: 0.5em;
+        }
+        .ProseMirror h3 {
+          font-size: 1.1em;
+          font-weight: bold;
+          margin-top: 1em;
+          margin-bottom: 0.5em;
+        }
+        .ProseMirror ul {
+          list-style-type: disc;
+          padding-left: 1.5em;
+        }
+        .ProseMirror ol {
+          list-style-type: decimal;
+          padding-left: 1.5em;
+        }
+        .ProseMirror blockquote {
+          border-left: 3px solid #ccc;
+          padding-left: 1em;
+          margin-left: 0;
+          font-style: italic;
+        }
+        .ProseMirror code {
+          background-color: rgba(#616161, 0.1);
+          color: #616161;
+          font-family: monospace;
+          padding: 0.25em;
+          border-radius: 0.25em;
+        }
+        .ProseMirror pre {
+          background: #0d0d0d;
+          color: #fff;
+          font-family: monospace;
+          padding: 0.75em 1em;
+          border-radius: 0.5em;
+        }
+        .ProseMirror pre code {
+          color: inherit;
+          padding: 0;
+          background: none;
+          font-size: 0.8em;
+        }
+        .ProseMirror strong {
+          font-weight: bold;
+        }
+        .ProseMirror em {
+          font-style: italic;
+        }
+      `}</style>
     </div>
   );
 };

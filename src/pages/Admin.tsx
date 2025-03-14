@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -50,7 +51,9 @@ const currencySymbols: Record<string, string> = {
 
 // Form validation schema
 const audioProductSchema = z.object({
-  title: z.string().min(2, { message: "Title must be at least 2 characters" }),
+  title: z.string()
+    .min(2, { message: "Title must be at least 2 characters" })
+    .max(70, { message: "Title must not exceed 70 characters" }),
   description: z.string().min(10, { message: "Description must be at least 10 characters" }),
   price: z.string().refine((val) => !isNaN(Number(val)) && Number(val) > 0, {
     message: "Price must be a positive number",
