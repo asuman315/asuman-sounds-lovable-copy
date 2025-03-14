@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
-import { Menu, X, User, LogOut } from "lucide-react";
+import { Menu, X, User, LogOut, LogIn, UserPlus } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -111,15 +111,21 @@ const Header = () => {
             </DropdownMenu>
           ) : (
             <>
-              <Button variant="ghost" size="sm" asChild>
-                <Link to="/login">Sign In</Link>
+              <Button variant="ghost" size="sm" className="flex items-center gap-1" asChild>
+                <Link to="/login">
+                  <LogIn className="h-4 w-4 mr-1" />
+                  Sign In
+                </Link>
               </Button>
-              <Button size="sm" asChild>
-                <Link to="/signup">Sign Up</Link>
+              <Button variant="outline" size="sm" className="flex items-center gap-1" asChild>
+                <Link to="/signup">
+                  <UserPlus className="h-4 w-4 mr-1" />
+                  Sign Up
+                </Link>
               </Button>
             </>
           )}
-          <Button className="hidden md:block">Shop Now</Button>
+          <Button className="hidden md:flex items-center">Shop Now</Button>
         </div>
 
         {/* Mobile Navigation Toggle */}
@@ -166,22 +172,24 @@ const Header = () => {
             <>
               <Link
                 to="/login"
-                className="text-xl font-medium py-2 border-b border-gray-100"
+                className="text-xl font-medium py-2 border-b border-gray-100 flex items-center"
                 onClick={() => {
                   setIsMobileMenuOpen(false);
                   document.body.style.overflow = "";
                 }}
               >
+                <LogIn className="mr-2 h-5 w-5" />
                 Sign In
               </Link>
               <Link
                 to="/signup"
-                className="text-xl font-medium py-2 border-b border-gray-100"
+                className="text-xl font-medium py-2 border-b border-gray-100 flex items-center"
                 onClick={() => {
                   setIsMobileMenuOpen(false);
                   document.body.style.overflow = "";
                 }}
               >
+                <UserPlus className="mr-2 h-5 w-5" />
                 Sign Up
               </Link>
             </>
