@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
-import { Menu, X, User, LogOut, LogIn, UserPlus } from "lucide-react";
+import { Menu, X, User, LogOut, LogIn, UserPlus, PlusCircle } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -68,6 +68,7 @@ const Header = () => {
 
   // Log authentication components being rendered
   console.log("Auth components rendering - user status:", user ? "logged in" : "logged out");
+  console.log("Rendering header with links for admin:", user ? "showing add product" : "not showing");
 
   return (
     <header
@@ -102,20 +103,33 @@ const Header = () => {
         {/* Authentication Buttons */}
         <div className="hidden md:flex items-center space-x-4">
           {user ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="relative rounded-full">
-                  <User size={18} />
-                  <span className="ml-2">Account</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={handleSignOut}>
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>Sign out</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="flex items-center gap-1 hover:bg-primary/10 transition-all duration-300"
+                asChild
+              >
+                <Link to="/admin">
+                  <PlusCircle className="h-4 w-4 mr-1" />
+                  <span className="font-medium">Add Product</span>
+                </Link>
+              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm" className="relative rounded-full">
+                    <User size={18} />
+                    <span className="ml-2">Account</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={handleSignOut}>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Sign out</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </>
           ) : (
             <>
               {/* Log when rendering sign-in/sign-up buttons */}
@@ -170,13 +184,26 @@ const Header = () => {
           ))}
           
           {user ? (
-            <button
-              onClick={handleSignOut}
-              className="text-xl font-medium py-2 border-b border-gray-100 flex items-center"
-            >
-              <LogOut className="mr-2 h-5 w-5" />
-              Sign Out
-            </button>
+            <>
+              <Link
+                to="/admin"
+                className="text-xl font-medium py-2 border-b border-gray-100 flex items-center"
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  document.body.style.overflow = "";
+                }}
+              >
+                <PlusCircle className="mr-2 h-5 w-5" />
+                Add Product
+              </Link>
+              <button
+                onClick={handleSignOut}
+                className="text-xl font-medium py-2 border-b border-gray-100 flex items-center"
+              >
+                <LogOut className="mr-2 h-5 w-5" />
+                Sign Out
+              </button>
+            </>
           ) : (
             <>
               {/* Log when rendering mobile sign-in/sign-up links */}
