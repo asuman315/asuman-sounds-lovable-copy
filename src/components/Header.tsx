@@ -18,6 +18,10 @@ const Header = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
 
+  // Add console logs to debug
+  console.log("Header rendering, user state:", !!user);
+  console.log("User object:", user);
+
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 20) {
@@ -61,6 +65,9 @@ const Header = () => {
     { name: "Team", href: "team" },
     { name: "Contact", href: "contact" },
   ];
+
+  // Log authentication components being rendered
+  console.log("Auth components rendering - user status:", user ? "logged in" : "logged out");
 
   return (
     <header
@@ -111,6 +118,8 @@ const Header = () => {
             </DropdownMenu>
           ) : (
             <>
+              {/* Log when rendering sign-in/sign-up buttons */}
+              {console.log("Rendering sign-in/sign-up buttons")}
               <Button variant="ghost" size="sm" className="flex items-center gap-1" asChild>
                 <Link to="/login">
                   <LogIn className="h-4 w-4 mr-1" />
@@ -170,6 +179,8 @@ const Header = () => {
             </button>
           ) : (
             <>
+              {/* Log when rendering mobile sign-in/sign-up links */}
+              {console.log("Rendering mobile sign-in/sign-up links")}
               <Link
                 to="/login"
                 className="text-xl font-medium py-2 border-b border-gray-100 flex items-center"
