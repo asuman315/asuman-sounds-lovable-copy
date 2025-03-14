@@ -170,9 +170,9 @@
 
 /* Sonner toast custom styles */
 [data-sonner-toast][data-type="success"] {
-  background-color: hsl(142, 76%, 96%);
+  background-color: hsl(var(--toast-success));
   border-color: hsl(142, 76%, 90%);
-  color: hsl(142, 76%, 24%);
+  color: white;
   box-shadow: 0 2px 8px rgba(22, 163, 74, 0.15);
 }
 
