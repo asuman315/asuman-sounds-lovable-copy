@@ -59,13 +59,13 @@ const Hero = () => {
           <div className="relative mx-auto max-w-5xl">
             <div className="aspect-[16/9] rounded-2xl overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 p-2 md:p-4 shadow-soft-lg glass-card">
               <div className="w-full h-full rounded-lg overflow-hidden bg-gradient-to-br from-gray-900 to-gray-800 flex items-center justify-center">
-                <div className="w-48 h-48 relative">
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-accent/20 rounded-full animate-pulse-slow"></div>
-                  <div className="absolute inset-4 bg-black rounded-full"></div>
-                  <div className="absolute inset-[18px] border-2 border-white/10 rounded-full"></div>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-white font-bold text-lg">A</span>
-                  </div>
+                <div className="relative">
+                  <img 
+                    src="/lovable-uploads/dda80657-f174-4543-a9c9-c0216afa2891.png" 
+                    alt="Premium blue headphones" 
+                    className="max-w-xs md:max-w-md lg:max-w-lg mx-auto object-contain transform hover:scale-105 transition-transform duration-500"
+                  />
+                  <div className="absolute -inset-8 bg-primary/10 rounded-full filter blur-xl opacity-30 animate-pulse-slow"></div>
                 </div>
               </div>
             </div>
