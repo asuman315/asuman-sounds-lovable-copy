@@ -35,6 +35,14 @@ const FeaturedProduct = ({ product, index }: FeaturedProductProps) => {
     product.images.find(img => img.is_main)?.image_url || product.images[0].image_url : 
     'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3';
 
+  // Format the description by removing HTML tags and limiting length
+  const formatDescription = (description: string) => {
+    // Remove HTML tags if present
+    const plainText = description.replace(/<[^>]*>/g, '');
+    // Return a shortened version if it's too long
+    return plainText.length > 120 ? plainText.substring(0, 120) + '...' : plainText;
+  };
+
   return (
     <motion.div
       className="glass-card overflow-hidden backdrop-blur-md"
@@ -57,7 +65,7 @@ const FeaturedProduct = ({ product, index }: FeaturedProductProps) => {
       
       <div className="p-6">
         <h3 className="text-xl font-bold mb-2">{product.title}</h3>
-        <p className="text-gray-600 mb-4 line-clamp-2">{product.description}</p>
+        <p className="text-gray-600 mb-4 line-clamp-2">{formatDescription(product.description)}</p>
         
         <div className="flex items-baseline mb-6">
           <span className="text-2xl font-bold">{formattedPrice}</span>

@@ -21,7 +21,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
   };
   
   const calculateDiscountedPrice = () => {
-    if (product.original_price) {
+    if (product.original_price && product.original_price > product.price) {
       return product.price;
     }
     return product.price;
@@ -36,6 +36,14 @@ const ProductCard = ({ product }: ProductCardProps) => {
     style: 'currency',
     currency: product.currency || 'USD',
   }).format(product.original_price) : null;
+
+  // Format the description by removing HTML tags and limiting length
+  const formatDescription = (description: string) => {
+    // Remove HTML tags if present
+    const plainText = description.replace(/<[^>]*>/g, '');
+    // Return a shortened version if it's too long
+    return plainText.length > 100 ? plainText.substring(0, 100) + '...' : plainText;
+  };
 
   // Get default placeholder image if no images are available
   const productImages = product.images && product.images.length > 0 
@@ -83,7 +91,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
           
           {/* Badges */}
           <div className="absolute top-3 left-3 flex flex-col gap-2">
-            {product.original_price && (
+            {product.original_price && product.original_price > product.price && (
               <span className="px-2 py-1 text-xs font-medium rounded-full bg-red-500 text-white">
                 {Math.round(((product.original_price - product.price) / product.original_price) * 100)}% OFF
               </span>
@@ -104,7 +112,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
           
           {/* Description */}
           <p className="text-sm text-gray-600 line-clamp-2 mb-3">
-            {product.description}
+            {formatDescription(product.description)}
           </p>
           
           {/* Price */}
@@ -112,7 +120,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
             <span className="text-xl font-semibold">
               {formattedPrice}
             </span>
-            {originalPrice && (
+            {originalPrice && product.original_price > product.price && (
               <span className="text-sm text-gray-500 line-through">
                 {originalPrice}
               </span>
