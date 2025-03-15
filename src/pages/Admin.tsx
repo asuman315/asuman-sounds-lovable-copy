@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -67,7 +68,7 @@ const audioProductSchema = z.object({
     message: "Price must be a positive number",
   }),
   currency: z.string().default("USD"),
-  category: z.string().default("headphones"),
+  category: z.string(),
   originalPrice: z.string().optional().refine((val) => !val || !isNaN(Number(val)) && Number(val) >= 0, {
     message: "Original price must be a non-negative number",
   }),
@@ -103,7 +104,7 @@ const AdminPage = () => {
       description: "",
       price: "",
       currency: "USD",
-      category: "headphones",
+      category: "",
       originalPrice: "",
       comparablePrice: "",
       stockCount: "0",
@@ -187,6 +188,11 @@ const AdminPage = () => {
   const onSubmit = async (values: AudioProductFormValues) => {
     if (imageFiles.length === 0) {
       toast.error("Please upload at least one product image");
+      return;
+    }
+
+    if (!values.category) {
+      toast.error("Please select a category");
       return;
     }
 
@@ -317,7 +323,7 @@ const AdminPage = () => {
                           <FormLabel>Category</FormLabel>
                           <Select 
                             onValueChange={field.onChange} 
-                            defaultValue={field.value}
+                            value={field.value}
                           >
                             <FormControl>
                               <SelectTrigger>
