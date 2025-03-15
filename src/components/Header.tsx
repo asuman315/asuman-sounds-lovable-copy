@@ -108,13 +108,16 @@ const Header = () => {
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300 py-4 px-4 md:px-8",
         isScrolled
           ? "bg-white/70 backdrop-blur-md shadow-sm text-foreground"
-          : "bg-transparent text-white"
+          : "bg-primary/10 backdrop-blur-sm text-foreground" // Changed to be visible before scrolling
       )}
     >
       <div className="container max-w-7xl mx-auto flex items-center justify-between">
         <div className="flex items-center">
           <Link to="/" className="flex items-center space-x-2">
-            <span className={cn("font-bold text-xl", isScrolled ? "text-gradient" : "text-white")}>Asuman Sounds</span>
+            <span className={cn("font-bold text-xl", 
+              isScrolled ? "text-gradient" : "text-foreground")}>
+              Asuman Sounds
+            </span>
           </Link>
         </div>
 
@@ -127,13 +130,13 @@ const Header = () => {
                 to={item.href}
                 className={cn(
                   "text-sm font-medium transition-colors relative group",
-                  isScrolled ? "text-foreground/80 hover:text-primary" : "text-white/90 hover:text-white"
+                  isScrolled ? "text-foreground/80 hover:text-primary" : "text-foreground/90 hover:text-primary"
                 )}
               >
                 {item.name}
                 <span className={cn(
                   "absolute bottom-[-4px] left-0 w-0 h-[2px] transition-all duration-300 group-hover:w-full",
-                  isScrolled ? "bg-primary" : "bg-white"
+                  isScrolled ? "bg-primary" : "bg-primary"
                 )}></span>
               </Link>
             ) : (
@@ -142,13 +145,13 @@ const Header = () => {
                 onClick={() => scrollTo(item.href)}
                 className={cn(
                   "text-sm font-medium transition-colors relative group",
-                  isScrolled ? "text-foreground/80 hover:text-primary" : "text-white/90 hover:text-white"
+                  isScrolled ? "text-foreground/80 hover:text-primary" : "text-foreground/90 hover:text-primary"
                 )}
               >
                 {item.name}
                 <span className={cn(
                   "absolute bottom-[-4px] left-0 w-0 h-[2px] transition-all duration-300 group-hover:w-full",
-                  isScrolled ? "bg-primary" : "bg-white"
+                  isScrolled ? "bg-primary" : "bg-primary"
                 )}></span>
               </button>
             )
@@ -166,7 +169,7 @@ const Header = () => {
                   "flex items-center gap-1 transition-all duration-300",
                   isScrolled ? 
                     "hover:bg-primary/10" : 
-                    "text-white border-white/30 hover:bg-white/10 bg-transparent"
+                    "hover:bg-primary/10 bg-transparent"
                 )}
                 asChild
               >
@@ -182,7 +185,7 @@ const Header = () => {
                     size="sm" 
                     className={cn(
                       "relative rounded-full",
-                      !isScrolled && "text-white border-white/30 hover:bg-white/10 bg-transparent"
+                      !isScrolled && "hover:bg-primary/10 bg-transparent"
                     )}
                   >
                     <User size={18} />
@@ -206,7 +209,7 @@ const Header = () => {
                 size="sm" 
                 className={cn(
                   "flex items-center gap-1",
-                  !isScrolled && "text-white border-white/30 hover:bg-white/10 bg-transparent"
+                  !isScrolled && "hover:bg-primary/10 bg-transparent"
                 )} 
                 asChild
               >
@@ -220,7 +223,7 @@ const Header = () => {
                 size="sm" 
                 className={cn(
                   "flex items-center gap-1",
-                  !isScrolled && "text-white border-white/30 hover:bg-white/10 bg-transparent"
+                  !isScrolled && "hover:bg-primary/10 bg-transparent"
                 )} 
                 asChild
               >
@@ -235,8 +238,8 @@ const Header = () => {
           {/* Cart button */}
           <button 
             className={cn(
-              "relative p-2 rounded-full transition-all duration-300 hover:bg-gray-100/10",
-              isScrolled ? "text-foreground" : "text-white"
+              "relative p-2 rounded-full transition-all duration-300 hover:bg-primary/10",
+              isScrolled ? "text-foreground" : "text-foreground"
             )}
             onClick={toggleCart}
             aria-label="Open cart"
@@ -254,7 +257,7 @@ const Header = () => {
               "hidden md:flex items-center transition-all duration-300",
               isScrolled ? 
                 "bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-700" : 
-                "bg-white/10 text-white hover:bg-white/20 border border-white/30"
+                "bg-primary/80 text-white hover:bg-primary"
             )}
             asChild
           >
@@ -271,7 +274,7 @@ const Header = () => {
           <button 
             className={cn(
               "relative p-1 transition-all duration-300",
-              isScrolled ? "text-foreground" : "text-white"
+              isScrolled ? "text-foreground" : "text-foreground"
             )}
             onClick={toggleCart}
             aria-label="Open cart"
@@ -288,7 +291,7 @@ const Header = () => {
           <button
             className={cn(
               "p-1",
-              isScrolled ? "text-foreground" : "text-white"
+              isScrolled ? "text-foreground" : "text-foreground"
             )}
             onClick={toggleMobileMenu}
             aria-label="Toggle menu"
