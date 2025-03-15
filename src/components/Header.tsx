@@ -98,14 +98,14 @@ const Header = () => {
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300 py-4 px-4 md:px-8",
         isScrolled
-          ? "bg-white/70 backdrop-blur-md shadow-sm"
-          : "bg-transparent"
+          ? "bg-white/70 backdrop-blur-md shadow-sm text-foreground"
+          : "bg-transparent text-white"
       )}
     >
       <div className="container max-w-7xl mx-auto flex items-center justify-between">
         <div className="flex items-center">
           <Link to="/" className="flex items-center space-x-2">
-            <span className="text-gradient font-bold text-xl">Asuman Sounds</span>
+            <span className={cn("font-bold text-xl", isScrolled ? "text-gradient" : "text-white")}>Asuman Sounds</span>
           </Link>
         </div>
 
@@ -116,19 +116,31 @@ const Header = () => {
               <Link
                 key={item.name}
                 to={item.href}
-                className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors relative group"
+                className={cn(
+                  "text-sm font-medium transition-colors relative group",
+                  isScrolled ? "text-foreground/80 hover:text-primary" : "text-white/90 hover:text-white"
+                )}
               >
                 {item.name}
-                <span className="absolute bottom-[-4px] left-0 w-0 h-[2px] bg-primary transition-all duration-300 group-hover:w-full"></span>
+                <span className={cn(
+                  "absolute bottom-[-4px] left-0 w-0 h-[2px] transition-all duration-300 group-hover:w-full",
+                  isScrolled ? "bg-primary" : "bg-white"
+                )}></span>
               </Link>
             ) : (
               <button
                 key={item.name}
                 onClick={() => scrollTo(item.href)}
-                className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors relative group"
+                className={cn(
+                  "text-sm font-medium transition-colors relative group",
+                  isScrolled ? "text-foreground/80 hover:text-primary" : "text-white/90 hover:text-white"
+                )}
               >
                 {item.name}
-                <span className="absolute bottom-[-4px] left-0 w-0 h-[2px] bg-primary transition-all duration-300 group-hover:w-full"></span>
+                <span className={cn(
+                  "absolute bottom-[-4px] left-0 w-0 h-[2px] transition-all duration-300 group-hover:w-full",
+                  isScrolled ? "bg-primary" : "bg-white"
+                )}></span>
               </button>
             )
           ))}
@@ -139,9 +151,12 @@ const Header = () => {
           {user ? (
             <>
               <Button 
-                variant="ghost" 
+                variant={isScrolled ? "ghost" : "outline"} 
                 size="sm" 
-                className="flex items-center gap-1 hover:bg-primary/10 transition-all duration-300"
+                className={cn(
+                  "flex items-center gap-1 transition-all duration-300",
+                  isScrolled ? "hover:bg-primary/10" : "text-white border-white/30 hover:bg-white/10"
+                )}
                 asChild
               >
                 <Link to="/admin">
@@ -151,7 +166,14 @@ const Header = () => {
               </Button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="relative rounded-full">
+                  <Button 
+                    variant={isScrolled ? "ghost" : "outline"} 
+                    size="sm" 
+                    className={cn(
+                      "relative rounded-full",
+                      !isScrolled && "text-white border-white/30 hover:bg-white/10"
+                    )}
+                  >
                     <User size={18} />
                     <span className="ml-2">Account</span>
                   </Button>
@@ -168,13 +190,29 @@ const Header = () => {
             <>
               {/* Log when rendering sign-in/sign-up buttons */}
               {console.log("Rendering sign-in/sign-up buttons")}
-              <Button variant="ghost" size="sm" className="flex items-center gap-1" asChild>
+              <Button 
+                variant={isScrolled ? "ghost" : "outline"} 
+                size="sm" 
+                className={cn(
+                  "flex items-center gap-1",
+                  !isScrolled && "text-white border-white/30 hover:bg-white/10"
+                )} 
+                asChild
+              >
                 <Link to="/login">
                   <LogIn className="h-4 w-4 mr-1" />
                   Sign In
                 </Link>
               </Button>
-              <Button variant="outline" size="sm" className="flex items-center gap-1" asChild>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className={cn(
+                  "flex items-center gap-1",
+                  !isScrolled && "text-white border-white/30 hover:bg-white/10"
+                )} 
+                asChild
+              >
                 <Link to="/signup">
                   <UserPlus className="h-4 w-4 mr-1" />
                   Sign Up
@@ -183,7 +221,12 @@ const Header = () => {
             </>
           )}
           <Button 
-            className="hidden md:flex items-center bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-700 transition-all duration-300"
+            className={cn(
+              "hidden md:flex items-center transition-all duration-300",
+              isScrolled ? 
+                "bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-700" : 
+                "bg-white text-primary hover:bg-white/90"
+            )}
             asChild
           >
             <Link to="/products">
@@ -195,7 +238,10 @@ const Header = () => {
 
         {/* Mobile Navigation Toggle */}
         <button
-          className="md:hidden text-foreground p-1"
+          className={cn(
+            "md:hidden p-1",
+            isScrolled ? "text-foreground" : "text-white"
+          )}
           onClick={toggleMobileMenu}
           aria-label="Toggle menu"
         >
