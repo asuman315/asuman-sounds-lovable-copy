@@ -10,6 +10,10 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import NotFound from "./pages/NotFound";
 import Admin from "./pages/Admin";
+import Products from "./pages/Products";
+
+// Install framer-motion for animations
+<lov-add-dependency>framer-motion@latest</lov-add-dependency>
 
 const queryClient = new QueryClient();
 
@@ -25,6 +29,8 @@ const App = () => (
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/admin" element={<Admin />} />
+            <Route path="/products" element={<Products />} />
+            <Route path="/products/:productId" element={<NotFound />} /> {/* Placeholder for product detail page */}
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

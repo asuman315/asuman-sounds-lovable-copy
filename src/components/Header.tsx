@@ -1,8 +1,8 @@
 
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
-import { Menu, X, User, LogOut, LogIn, UserPlus, PlusCircle } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Menu, X, User, LogOut, LogIn, UserPlus, PlusCircle, ShoppingBag } from "lucide-react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,6 +17,7 @@ const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   // Add console logs to debug
   console.log("Header rendering, user state:", !!user);
@@ -37,21 +38,42 @@ const Header = () => {
     };
   }, []);
 
+  useEffect(() => {
+    // Close mobile menu when route changes
+    setIsMobileMenuOpen(false);
+    document.body.style.overflow = "";
+  }, [location.pathname]);
+
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
     document.body.style.overflow = isMobileMenuOpen ? "" : "hidden";
   };
 
   const scrollTo = (id: string) => {
-    const element = document.getElementById(id);
-    if (element) {
-      window.scrollTo({
-        top: element.offsetTop - 80,
-        behavior: "smooth",
-      });
-      setIsMobileMenuOpen(false);
-      document.body.style.overflow = "";
+    // Only use scroll behavior on homepage
+    if (location.pathname !== "/") {
+      navigate("/");
+      // We need to wait for navigation to complete before scrolling
+      setTimeout(() => {
+        const element = document.getElementById(id);
+        if (element) {
+          window.scrollTo({
+            top: element.offsetTop - 80,
+            behavior: "smooth",
+          });
+        }
+      }, 100);
+    } else {
+      const element = document.getElementById(id);
+      if (element) {
+        window.scrollTo({
+          top: element.offsetTop - 80,
+          behavior: "smooth",
+        });
+      }
     }
+    setIsMobileMenuOpen(false);
+    document.body.style.overflow = "";
   };
 
   const handleSignOut = async () => {
@@ -60,10 +82,11 @@ const Header = () => {
   };
 
   const navItems = [
-    { name: "Home", href: "hero" },
-    { name: "Features", href: "features" },
-    { name: "Team", href: "team" },
-    { name: "Contact", href: "contact" },
+    { name: "Home", href: "hero", isPage: false },
+    { name: "Products", href: "/products", isPage: true },
+    { name: "Features", href: "features", isPage: false },
+    { name: "Team", href: "team", isPage: false },
+    { name: "Contact", href: "contact", isPage: false },
   ];
 
   // Log authentication components being rendered
@@ -81,22 +104,33 @@ const Header = () => {
     >
       <div className="container max-w-7xl mx-auto flex items-center justify-between">
         <div className="flex items-center">
-          <a href="#hero" className="flex items-center space-x-2">
+          <Link to="/" className="flex items-center space-x-2">
             <span className="text-gradient font-bold text-xl">Asuman Sounds</span>
-          </a>
+          </Link>
         </div>
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex space-x-8">
           {navItems.map((item) => (
-            <button
-              key={item.name}
-              onClick={() => scrollTo(item.href)}
-              className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors relative group"
-            >
-              {item.name}
-              <span className="absolute bottom-[-4px] left-0 w-0 h-[2px] bg-primary transition-all duration-300 group-hover:w-full"></span>
-            </button>
+            item.isPage ? (
+              <Link
+                key={item.name}
+                to={item.href}
+                className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors relative group"
+              >
+                {item.name}
+                <span className="absolute bottom-[-4px] left-0 w-0 h-[2px] bg-primary transition-all duration-300 group-hover:w-full"></span>
+              </Link>
+            ) : (
+              <button
+                key={item.name}
+                onClick={() => scrollTo(item.href)}
+                className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors relative group"
+              >
+                {item.name}
+                <span className="absolute bottom-[-4px] left-0 w-0 h-[2px] bg-primary transition-all duration-300 group-hover:w-full"></span>
+              </button>
+            )
           ))}
         </nav>
 
@@ -148,7 +182,15 @@ const Header = () => {
               </Button>
             </>
           )}
-          <Button className="hidden md:flex items-center">Shop Now</Button>
+          <Button 
+            className="hidden md:flex items-center bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-700 transition-all duration-300"
+            asChild
+          >
+            <Link to="/products">
+              <ShoppingBag className="mr-2 h-4 w-4" />
+              Shop Now
+            </Link>
+          </Button>
         </div>
 
         {/* Mobile Navigation Toggle */}
@@ -174,13 +216,27 @@ const Header = () => {
       >
         <div className="h-full flex flex-col pt-24 px-6 space-y-8">
           {navItems.map((item) => (
-            <button
-              key={item.name}
-              onClick={() => scrollTo(item.href)}
-              className="text-xl font-medium py-2 border-b border-gray-100"
-            >
-              {item.name}
-            </button>
+            item.isPage ? (
+              <Link
+                key={item.name}
+                to={item.href}
+                className="text-xl font-medium py-2 border-b border-gray-100"
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  document.body.style.overflow = "";
+                }}
+              >
+                {item.name}
+              </Link>
+            ) : (
+              <button
+                key={item.name}
+                onClick={() => scrollTo(item.href)}
+                className="text-xl font-medium py-2 border-b border-gray-100"
+              >
+                {item.name}
+              </button>
+            )
           ))}
           
           {user ? (
@@ -233,7 +289,17 @@ const Header = () => {
             </>
           )}
           
-          <button className="btn-primary mt-auto mb-8">Shop Now</button>
+          <Link
+            to="/products"
+            className="btn-primary mt-auto mb-8 flex items-center justify-center gap-2"
+            onClick={() => {
+              setIsMobileMenuOpen(false);
+              document.body.style.overflow = "";
+            }}
+          >
+            <ShoppingBag className="h-5 w-5" />
+            Shop Now
+          </Link>
         </div>
       </div>
     </header>
