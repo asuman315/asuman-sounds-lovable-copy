@@ -1,23 +1,23 @@
-
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useSearchParams } from "react-router-dom";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Search, Filter, X, ChevronDown, Heart, ShoppingCart, ShoppingBag } from "lucide-react";
+import { Search, Filter, X, ChevronDown, ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useToast } from "@/components/ui/use-toast";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
 import ProductCardSkeleton from "@/components/ProductCardSkeleton";
 import FeaturedProduct from "@/components/FeaturedProduct";
 import { Product } from "@/types/product";
-import { products, featuredProducts, categories } from "@/data/products";
+import { getProducts, getFeaturedProducts, getProductsByCategory, searchProducts, categories } from "@/services/ProductService";
+import { useQuery } from "@tanstack/react-query";
 
 const Products = () => {
+  const { toast } = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
   const [displayProducts, setDisplayProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>(
     searchParams.get("category") || "all"
@@ -29,10 +29,29 @@ const Products = () => {
     searchParams.get("q") || ""
   );
 
+  // Fetch all products
+  const { data: allProducts, isLoading: isLoadingProducts, error: productsError } = useQuery({
+    queryKey: ['products'],
+    queryFn: getProducts
+  });
+
+  // Fetch featured products
+  const { data: featuredProductsData, isLoading: isLoadingFeatured, error: featuredError } = useQuery({
+    queryKey: ['featuredProducts'],
+    queryFn: getFeaturedProducts
+  });
+
   useEffect(() => {
-    // Simulate loading data
-    setLoading(true);
-    
+    if (productsError || featuredError) {
+      toast({
+        title: "Error",
+        description: "Failed to load products. Please try again later.",
+        variant: "destructive",
+      });
+    }
+  }, [productsError, featuredError, toast]);
+
+  useEffect(() => {
     // Update search params
     const params: { [key: string]: string } = {};
     if (selectedCategory !== "all") params.category = selectedCategory;
@@ -41,7 +60,9 @@ const Products = () => {
     setSearchParams(params);
     
     // Filter and sort products
-    let filtered = [...products];
+    if (!allProducts) return;
+    
+    let filtered = [...allProducts];
     
     // Apply category filter
     if (selectedCategory !== "all") {
@@ -52,7 +73,7 @@ const Products = () => {
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter(p => 
-        p.name.toLowerCase().includes(query) || 
+        p.title.toLowerCase().includes(query) || 
         p.description.toLowerCase().includes(query)
       );
     }
@@ -60,30 +81,26 @@ const Products = () => {
     // Apply sorting
     switch (sortOption) {
       case "price-low":
-        filtered.sort((a, b) => (a.price - (a.price * (a.discount || 0))) - (b.price - (b.price * (b.discount || 0))));
+        filtered.sort((a, b) => a.price - b.price);
         break;
       case "price-high":
-        filtered.sort((a, b) => (b.price - (b.price * (b.discount || 0))) - (a.price - (a.price * (a.discount || 0))));
+        filtered.sort((a, b) => b.price - a.price);
         break;
       case "newest":
-        filtered.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        filtered.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
         break;
       case "best-selling":
-        filtered.sort((a, b) => (b.soldCount || 0) - (a.soldCount || 0));
+        // In a real app, you'd have a field for tracking sales
+        // For now, just keep the default order
         break;
       default:
-        // Default to featured order
+        // Default to featured order, but since we don't have a specific field for this,
+        // we just use the default order
         break;
     }
     
-    // Simulate API delay
-    const timer = setTimeout(() => {
-      setDisplayProducts(filtered);
-      setLoading(false);
-    }, 600);
-    
-    return () => clearTimeout(timer);
-  }, [selectedCategory, sortOption, searchQuery, setSearchParams]);
+    setDisplayProducts(filtered);
+  }, [selectedCategory, sortOption, searchQuery, allProducts, setSearchParams]);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -179,9 +196,26 @@ const Products = () => {
           </motion.div>
           
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {featuredProducts.map((product, index) => (
-              <FeaturedProduct key={product.id} product={product} index={index} />
-            ))}
+            {isLoadingFeatured ? (
+              // Skeleton loading for featured products
+              Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="space-y-4">
+                  <div className="aspect-video w-full">
+                    <div className="h-full w-full bg-gray-200 animate-pulse rounded-xl"></div>
+                  </div>
+                  <div className="h-6 bg-gray-200 animate-pulse rounded w-3/4"></div>
+                  <div className="h-4 bg-gray-200 animate-pulse rounded w-1/2"></div>
+                </div>
+              ))
+            ) : featuredProductsData && featuredProductsData.length > 0 ? (
+              featuredProductsData.slice(0, 3).map((product, index) => (
+                <FeaturedProduct key={product.id} product={product} index={index} />
+              ))
+            ) : (
+              <div className="col-span-3 text-center py-10">
+                <p className="text-muted-foreground">No featured products found.</p>
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -234,7 +268,7 @@ const Products = () => {
                 <div className="mb-8">
                   <h3 className="text-lg font-medium mb-4">Price Range</h3>
                   <div className="px-2">
-                    {/* TODO: Price range slider */}
+                    {/* Price range slider - coming soon */}
                     <p className="text-muted-foreground text-sm">Coming soon</p>
                   </div>
                 </div>
@@ -291,7 +325,6 @@ const Products = () => {
                     >
                       <option value="featured">Featured</option>
                       <option value="newest">Newest</option>
-                      <option value="best-selling">Best Selling</option>
                       <option value="price-low">Price: Low to High</option>
                       <option value="price-high">Price: High to Low</option>
                     </select>
@@ -301,7 +334,7 @@ const Products = () => {
               </div>
               
               {/* Product count */}
-              {!loading && (
+              {!isLoadingProducts && (
                 <div className="mb-6">
                   <p className="text-muted-foreground">
                     Showing {displayProducts.length} {displayProducts.length === 1 ? 'product' : 'products'}
@@ -316,9 +349,9 @@ const Products = () => {
                 className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
                 variants={containerVariants}
                 initial="hidden"
-                animate={loading ? "hidden" : "visible"}
+                animate={isLoadingProducts ? "hidden" : "visible"}
               >
-                {loading ? (
+                {isLoadingProducts ? (
                   // Skeleton loading state
                   Array.from({ length: 8 }).map((_, i) => (
                     <ProductCardSkeleton key={i} />

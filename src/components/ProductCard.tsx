@@ -21,21 +21,26 @@ const ProductCard = ({ product }: ProductCardProps) => {
   };
   
   const calculateDiscountedPrice = () => {
-    if (product.discount) {
-      return product.price - (product.price * product.discount);
+    if (product.original_price) {
+      return product.price;
     }
     return product.price;
   };
   
   const formattedPrice = new Intl.NumberFormat('en-US', {
     style: 'currency',
-    currency: 'USD',
+    currency: product.currency || 'USD',
   }).format(calculateDiscountedPrice());
   
-  const originalPrice = new Intl.NumberFormat('en-US', {
+  const originalPrice = product.original_price ? new Intl.NumberFormat('en-US', {
     style: 'currency',
-    currency: 'USD',
-  }).format(product.price);
+    currency: product.currency || 'USD',
+  }).format(product.original_price) : null;
+
+  // Get default placeholder image if no images are available
+  const productImages = product.images && product.images.length > 0 
+    ? product.images.map(img => img.image_url)
+    : ["https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3"];
   
   return (
     <motion.div
@@ -45,19 +50,19 @@ const ProductCard = ({ product }: ProductCardProps) => {
       <Link to={`/products/${product.id}`} className="block h-full">
         <div className="relative aspect-square overflow-hidden">
           {/* Product image */}
-          {product.images.length > 1 ? (
+          {productImages.length > 1 ? (
             <div
               className="absolute inset-0 bg-cover bg-center transition-opacity duration-500"
               style={{
-                backgroundImage: `url(${product.images[currentImageIndex]})`,
+                backgroundImage: `url(${productImages[currentImageIndex]})`,
               }}
               onMouseEnter={() => setCurrentImageIndex(1)}
               onMouseLeave={() => setCurrentImageIndex(0)}
             />
           ) : (
             <img 
-              src={product.images[0]} 
-              alt={product.name} 
+              src={productImages[0]} 
+              alt={product.title} 
               className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105" 
               loading="lazy"
             />
@@ -78,12 +83,12 @@ const ProductCard = ({ product }: ProductCardProps) => {
           
           {/* Badges */}
           <div className="absolute top-3 left-3 flex flex-col gap-2">
-            {product.discount && (
+            {product.original_price && (
               <span className="px-2 py-1 text-xs font-medium rounded-full bg-red-500 text-white">
-                {Math.round(product.discount * 100)}% OFF
+                {Math.round(((product.original_price - product.price) / product.original_price) * 100)}% OFF
               </span>
             )}
-            {!product.inStock && (
+            {product.stock_count <= 0 && (
               <span className="px-2 py-1 text-xs font-medium rounded-full bg-gray-800 text-white">
                 Out of Stock
               </span>
@@ -92,34 +97,9 @@ const ProductCard = ({ product }: ProductCardProps) => {
         </div>
         
         <div className="p-4">
-          {/* Product name and rating */}
+          {/* Product name */}
           <div className="mb-2">
-            <h3 className="text-lg font-medium line-clamp-1">{product.name}</h3>
-            {product.rating && (
-              <div className="flex items-center mt-1">
-                <div className="flex items-center">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <svg
-                      key={i}
-                      className={`w-4 h-4 ${
-                        i < Math.floor(product.rating!)
-                          ? "text-yellow-400"
-                          : i < product.rating!
-                          ? "text-yellow-400"
-                          : "text-gray-300"
-                      }`}
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                  ))}
-                </div>
-                <span className="text-xs text-gray-500 ml-1">
-                  ({product.reviewCount})
-                </span>
-              </div>
-            )}
+            <h3 className="text-lg font-medium line-clamp-1">{product.title}</h3>
           </div>
           
           {/* Description */}
@@ -132,7 +112,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
             <span className="text-xl font-semibold">
               {formattedPrice}
             </span>
-            {product.discount && (
+            {originalPrice && (
               <span className="text-sm text-gray-500 line-through">
                 {originalPrice}
               </span>
@@ -143,7 +123,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
           <div className="flex gap-2">
             <Button
               className="flex-1 text-sm px-3 py-1 h-9 bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-700 transition-colors"
-              disabled={!product.inStock}
+              disabled={product.stock_count <= 0}
             >
               <ShoppingCart className="h-4 w-4 mr-1" />
               Add to Cart

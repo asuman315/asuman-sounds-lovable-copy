@@ -1,20 +1,28 @@
 
 export interface Product {
   id: string;
-  name: string;
+  title: string;
   description: string;
   price: number;
-  discount?: number;
-  images: string[];
+  currency: string;
+  original_price?: number;
+  comparable_price?: number;
+  stock_count: number;
+  is_featured: boolean;
   category: string;
-  inStock: boolean;
-  featured?: boolean;
-  rating?: number;
-  reviewCount?: number;
-  soldCount?: number;
-  createdAt: string;
-  colors?: string[];
-  specs?: Record<string, string>;
+  created_at: string;
+  updated_at: string;
+  user_id: string;
+  images?: ProductImage[];
+}
+
+export interface ProductImage {
+  id: string;
+  product_id: string;
+  image_url: string;
+  is_main: boolean;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Category {
