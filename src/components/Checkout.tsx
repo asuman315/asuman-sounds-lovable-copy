@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Truck, CreditCard, Check, ArrowRight, Home, MapPin, Clock, Phone, Mail, User, ShoppingBag } from "lucide-react";
@@ -158,6 +157,10 @@ const Checkout = () => {
               <li className="flex items-center">
                 <Check className="w-4 h-4 mr-2 text-primary" />
                 <span>Contact delivery personnel directly</span>
+              </li>
+              <li className="flex items-center">
+                <Check className="w-4 h-4 mr-2 text-primary" />
+                <span>Pay on delivery</span>
               </li>
             </ul>
           </CardContent>
@@ -502,7 +505,7 @@ const Checkout = () => {
               {state.paymentMethod === "cod" ? (
                 <>
                   <ShoppingBag className="w-5 h-5 mr-2 text-primary" />
-                  <span>Cash on Delivery</span>
+                  <span>Pay on Delivery</span>
                 </>
               ) : (
                 <>
@@ -553,9 +556,9 @@ const Checkout = () => {
                 <div key={item.product.id} className="flex justify-between items-center border-b pb-2 last:border-0 last:pb-0">
                   <div className="flex items-center">
                     <div className="w-12 h-12 rounded-md overflow-hidden bg-gray-100 mr-3">
-                      {item.product.images && item.product.images[0] && (
+                      {item.product.images && item.product.images.length > 0 && (
                         <img 
-                          src={item.product.images[0]} 
+                          src={item.product.images[0].image_url} 
                           alt={item.product.title} 
                           className="w-full h-full object-cover"
                         />
