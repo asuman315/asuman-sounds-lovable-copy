@@ -475,119 +475,200 @@ const Checkout = () => {
   );
 
   const renderSummary = () => (
-    <AnimatedElement animation="fade-in" className="w-full max-w-2xl mx-auto mt-8">
-      <Card className="backdrop-blur-md bg-white/90 dark:bg-gray-900/90 border border-gray-200 dark:border-gray-800 shadow-lg">
-        <CardHeader>
-          <CardTitle>Order Summary</CardTitle>
-          <CardDescription>Review your order details before completing checkout</CardDescription>
+    <AnimatedElement animation="fade-in" className="w-full max-w-3xl mx-auto mt-8">
+      <Card glass className="overflow-hidden border-0 ring-1 ring-black/5 dark:ring-white/10 shadow-soft-lg">
+        <CardHeader className="pb-4 border-b border-gray-100 dark:border-gray-800">
+          <div className="flex items-center space-x-3 mb-2">
+            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+              <ShoppingBag className="w-5 h-5 text-primary" />
+            </div>
+            <CardTitle className="font-medium text-2xl">Order Summary</CardTitle>
+          </div>
+          <CardDescription className="text-base text-gray-500 dark:text-gray-400">
+            Review your order details before completing checkout
+          </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <h3 className="text-sm font-medium">Delivery Method</h3>
-            <div className="flex items-center p-3 bg-primary/5 rounded-md">
-              {state.deliveryMethod === "personal" ? (
-                <>
-                  <Truck className="w-5 h-5 mr-2 text-primary" />
-                  <span>Personal Delivery</span>
-                </>
-              ) : (
-                <>
-                  <Home className="w-5 h-5 mr-2 text-primary" />
-                  <span>Shipping</span>
-                </>
+        
+        <CardContent className="p-0">
+          <div className="grid md:grid-cols-5 divide-y md:divide-y-0 md:divide-x divide-gray-100 dark:divide-gray-800">
+            {/* Order details section - 3/5 width on desktop */}
+            <div className="p-6 md:col-span-3 space-y-6">
+              <div>
+                <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-3">
+                  Order Details
+                </h3>
+                
+                <div className="space-y-4">
+                  <div className="flex items-center p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl">
+                    {state.deliveryMethod === "personal" ? (
+                      <>
+                        <Truck className="w-5 h-5 mr-3 text-primary" />
+                        <div>
+                          <span className="font-medium">Personal Delivery</span>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                            Direct delivery to your location
+                          </p>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <Home className="w-5 h-5 mr-3 text-primary" />
+                        <div>
+                          <span className="font-medium">Shipping</span>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                            Standard delivery service
+                          </p>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                  
+                  <div className="flex items-center p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl">
+                    {state.paymentMethod === "cod" ? (
+                      <>
+                        <ShoppingBag className="w-5 h-5 mr-3 text-primary" />
+                        <div>
+                          <span className="font-medium">Pay on Delivery</span>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                            Pay when your order arrives
+                          </p>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <CreditCard className="w-5 h-5 mr-3 text-primary" />
+                        <div>
+                          <span className="font-medium">Stripe Payment</span>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                            Secure online payment
+                          </p>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </div>
+              
+              {state.personalDeliveryInfo && (
+                <div>
+                  <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-3">
+                    Contact Information
+                  </h3>
+                  <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-4 space-y-2">
+                    <div className="flex">
+                      <User className="w-4 h-4 text-gray-400 mr-2 mt-0.5" />
+                      <div>
+                        <p className="text-sm font-medium">
+                          {state.personalDeliveryInfo.fullName}
+                        </p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          {state.personalDeliveryInfo.district}
+                          {state.personalDeliveryInfo.cityOrTown && `, ${state.personalDeliveryInfo.cityOrTown}`}
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex">
+                      <Phone className="w-4 h-4 text-gray-400 mr-2 mt-0.5" />
+                      <p className="text-sm">{state.personalDeliveryInfo.phoneNumber}</p>
+                    </div>
+                    
+                    {state.personalDeliveryInfo.email && (
+                      <div className="flex">
+                        <Mail className="w-4 h-4 text-gray-400 mr-2 mt-0.5" />
+                        <p className="text-sm">{state.personalDeliveryInfo.email}</p>
+                      </div>
+                    )}
+                    
+                    <div className="flex">
+                      <Clock className="w-4 h-4 text-gray-400 mr-2 mt-0.5" />
+                      <p className="text-sm">
+                        {state.personalDeliveryInfo.preferredTime === "morning" ? "Morning (8AM - 12PM)" :
+                        state.personalDeliveryInfo.preferredTime === "afternoon" ? "Afternoon (12PM - 5PM)" :
+                        state.personalDeliveryInfo.preferredTime === "evening" ? "Evening (5PM - 9PM)" : "Any Time"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              {state.address && (
+                <div>
+                  <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-3">
+                    Shipping Address
+                  </h3>
+                  <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-4">
+                    <div className="flex">
+                      <MapPin className="w-4 h-4 text-gray-400 mr-2 mt-0.5" />
+                      <div>
+                        <p className="text-sm">{state.address.street}</p>
+                        <p className="text-sm">{state.address.city}, {state.address.state} {state.address.zip}</p>
+                        <p className="text-sm">{state.address.country}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               )}
             </div>
-          </div>
-          
-          <div className="space-y-2">
-            <h3 className="text-sm font-medium">Payment Method</h3>
-            <div className="flex items-center p-3 bg-primary/5 rounded-md">
-              {state.paymentMethod === "cod" ? (
-                <>
-                  <ShoppingBag className="w-5 h-5 mr-2 text-primary" />
-                  <span>Pay on Delivery</span>
-                </>
-              ) : (
-                <>
-                  <CreditCard className="w-5 h-5 mr-2 text-primary" />
-                  <span>Stripe Payment</span>
-                </>
-              )}
-            </div>
-          </div>
-          
-          {state.personalDeliveryInfo && (
-            <div className="space-y-2">
-              <h3 className="text-sm font-medium">Personal Delivery Information</h3>
-              <div className="p-3 bg-primary/5 rounded-md space-y-2">
-                <p><span className="font-medium">Name:</span> {state.personalDeliveryInfo.fullName}</p>
-                <p><span className="font-medium">Phone:</span> {state.personalDeliveryInfo.phoneNumber}</p>
-                <p><span className="font-medium">District:</span> {state.personalDeliveryInfo.district}</p>
-                {state.personalDeliveryInfo.cityOrTown && (
-                  <p><span className="font-medium">City/Town:</span> {state.personalDeliveryInfo.cityOrTown}</p>
-                )}
-                {state.personalDeliveryInfo.email && (
-                  <p><span className="font-medium">Email:</span> {state.personalDeliveryInfo.email}</p>
-                )}
-                <p><span className="font-medium">Preferred Time:</span> {
-                  state.personalDeliveryInfo.preferredTime === "morning" ? "Morning (8AM - 12PM)" :
-                  state.personalDeliveryInfo.preferredTime === "afternoon" ? "Afternoon (12PM - 5PM)" :
-                  state.personalDeliveryInfo.preferredTime === "evening" ? "Evening (5PM - 9PM)" : "Any Time"
-                }</p>
-              </div>
-            </div>
-          )}
-          
-          {state.address && (
-            <div className="space-y-2">
-              <h3 className="text-sm font-medium">Delivery Address</h3>
-              <div className="p-3 bg-primary/5 rounded-md">
-                <p>{state.address.street}</p>
-                <p>{state.address.city}, {state.address.state} {state.address.zip}</p>
-                <p>{state.address.country}</p>
-              </div>
-            </div>
-          )}
-          
-          <div className="space-y-2">
-            <h3 className="text-sm font-medium">Order Items</h3>
-            <div className="p-3 bg-primary/5 rounded-md space-y-3">
-              {items.map((item) => (
-                <div key={item.product.id} className="flex justify-between items-center border-b pb-2 last:border-0 last:pb-0">
-                  <div className="flex items-center">
-                    <div className="w-12 h-12 rounded-md overflow-hidden bg-gray-100 mr-3">
+            
+            {/* Order items and price section - 2/5 width on desktop */}
+            <div className="p-6 md:col-span-2 bg-gray-50/50 dark:bg-gray-900/30">
+              <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-4">
+                Order Items
+              </h3>
+              
+              <div className="space-y-4 mb-6">
+                {items.map((item) => (
+                  <div key={item.product.id} className="flex space-x-3">
+                    <div className="w-16 h-16 rounded-lg overflow-hidden bg-white flex-shrink-0 p-1 shadow-sm border border-gray-100 dark:border-gray-800">
                       {item.product.images && item.product.images.length > 0 && (
                         <img 
                           src={item.product.images[0].image_url} 
                           alt={item.product.title} 
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-cover rounded"
                         />
                       )}
                     </div>
-                    <div>
-                      <p className="font-medium text-sm">{item.product.title}</p>
-                      <p className="text-muted-foreground text-xs">Qty: {item.quantity}</p>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="text-sm font-medium truncate">{item.product.title}</h4>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">Qty: {item.quantity}</p>
+                      <div className="flex justify-between items-center mt-1">
+                        <p className="text-xs text-gray-500">${item.product.price.toFixed(2)} each</p>
+                        <p className="text-sm font-medium">${(item.product.price * item.quantity).toFixed(2)}</p>
+                      </div>
                     </div>
                   </div>
-                  <p className="font-medium">${(item.product.price * item.quantity).toFixed(2)}</p>
+                ))}
+              </div>
+              
+              <div className="border-t border-gray-200 dark:border-gray-700 pt-4 space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-500">Subtotal</span>
+                  <span>${totalPrice.toFixed(2)}</span>
                 </div>
-              ))}
-              <div className="flex justify-between items-center pt-2 font-medium">
-                <span>Total:</span>
-                <span>${totalPrice.toFixed(2)}</span>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-500">Shipping</span>
+                  <span>Free</span>
+                </div>
+                <div className="flex justify-between font-medium text-base pt-2 border-t border-gray-200 dark:border-gray-700">
+                  <span>Total</span>
+                  <span className="text-primary">${totalPrice.toFixed(2)}</span>
+                </div>
               </div>
             </div>
           </div>
         </CardContent>
-        <CardFooter className="flex justify-between">
+        
+        <CardFooter className="p-6 border-t border-gray-100 dark:border-gray-800 flex justify-between items-center">
           <Button 
             variant="outline" 
             onClick={() => setStep("options")}
+            className="rounded-full px-4 border-gray-200 hover:bg-gray-50"
           >
             Change Options
           </Button>
           <Button 
-            className="bg-gradient-to-r from-primary to-blue-600"
+            className="rounded-full px-6 bg-gradient-to-r from-primary to-blue-600 hover:shadow-md transition-all duration-300"
             onClick={handleCheckout}
             disabled={state.isProcessing}
           >
