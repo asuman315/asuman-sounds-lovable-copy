@@ -12,9 +12,6 @@ import NotFound from "./pages/NotFound";
 import Admin from "./pages/Admin";
 import Products from "./pages/Products";
 
-// Install framer-motion for animations
-<lov-add-dependency>framer-motion@latest</lov-add-dependency>
-
 const queryClient = new QueryClient();
 
 const App = () => (
