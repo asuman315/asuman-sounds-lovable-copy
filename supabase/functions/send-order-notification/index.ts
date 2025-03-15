@@ -1,10 +1,13 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { Resend } from "npm:resend@2.0.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
+
+const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
 serve(async (req) => {
   // Handle CORS preflight requests
@@ -13,37 +16,42 @@ serve(async (req) => {
   }
 
   try {
-    const { to, customer, phoneNumber, district, cityOrTown, preferredTime, items, totalAmount } = await req.json();
+    const { customer, phoneNumber, district, cityOrTown, preferredTime, items, totalAmount } = await req.json();
 
-    console.log(`Sending order notification to ${to}`);
+    console.log(`Processing order notification for ${customer}`);
     console.log(`Order details: Customer: ${customer}, Phone: ${phoneNumber}, District: ${district}`);
     console.log(`Items: ${items}`);
     
-    // In a real implementation, you would integrate with an SMS service like Twilio here
-    // For now, we're just logging the information that would be sent
-    
+    // Format the message for email
     const message = `
-NEW ORDER NOTIFICATION:
------------------------
-Customer: ${customer}
-Phone: ${phoneNumber}
-District: ${district}
-City/Town: ${cityOrTown}
-Preferred Time: ${preferredTime}
+<h1>NEW ORDER NOTIFICATION</h1>
+<hr />
+<p><strong>Customer:</strong> ${customer}</p>
+<p><strong>Phone:</strong> ${phoneNumber}</p>
+<p><strong>District:</strong> ${district}</p>
+<p><strong>City/Town:</strong> ${cityOrTown || "Not specified"}</p>
+<p><strong>Preferred Time:</strong> ${preferredTime}</p>
 
-ITEMS:
-${items}
+<h2>ITEMS:</h2>
+<pre>${items}</pre>
 
-Total Amount: ${totalAmount}
------------------------
+<p><strong>Total Amount:</strong> ${totalAmount}</p>
+<hr />
     `;
     
-    console.log("Message that would be sent:");
-    console.log(message);
+    // Send email notification
+    const emailData = await resend.emails.send({
+      from: "Order Notification <onboarding@resend.dev>",
+      to: "asumanssendegeya@gmail.com",
+      subject: `New Order from ${customer}`,
+      html: message,
+    });
+    
+    console.log("Email notification sent:", emailData);
     
     // Success response
     return new Response(
-      JSON.stringify({ success: true, message: "Order notification sent successfully" }),
+      JSON.stringify({ success: true, message: "Order notification sent successfully", data: emailData }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error) {

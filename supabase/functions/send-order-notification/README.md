@@ -1,17 +1,17 @@
 
 # Send Order Notification Function
 
-This Edge Function sends order notifications to a specified phone number when a customer completes a personal delivery checkout.
+This Edge Function sends order notifications via email when a customer completes a personal delivery checkout.
 
 ## Features
 - Sends detailed order information including customer details and items ordered
-- Formats the message in a readable way
+- Formats the message in a readable HTML email
+- Sends email to a specified recipient
 - Logs all information for debugging purposes
 
 ## Payload Structure
 ```json
 {
-  "to": "phone number to send to",
   "customer": "customer name",
   "phoneNumber": "customer phone",
   "district": "delivery district",
@@ -22,8 +22,18 @@ This Edge Function sends order notifications to a specified phone number when a 
 }
 ```
 
+## Configuration
+This function requires a Resend API key to be set as a secret in the Supabase project:
+- `RESEND_API_KEY`: Your Resend API key
+
+## Setup Instructions
+1. Create an account at [Resend](https://resend.com) if you don't have one
+2. Generate an API key at [Resend API Keys](https://resend.com/api-keys)
+3. Add the API key as a secret to your Supabase project
+4. Deploy the edge function
+
 ## Future Improvements
-- Integrate with an SMS service (Twilio, etc.) to actually send the SMS
+- Add email templates with better styling
+- Send confirmation emails to customers as well
 - Add authentication to secure the endpoint
 - Add more detailed logging and error handling
-```

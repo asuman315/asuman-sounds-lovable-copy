@@ -81,7 +81,7 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setState((prev) => ({ ...prev, personalDeliveryInfo }));
   };
 
-  const sendOrderDetailsToPhone = async () => {
+  const sendOrderNotification = async () => {
     try {
       if (state.deliveryMethod === "personal" && state.personalDeliveryInfo) {
         // Format order details
@@ -95,7 +95,6 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           state.personalDeliveryInfo.preferredTime === "evening" ? "Evening (5PM - 9PM)" : "Any Time";
         
         const messageDetails = {
-          to: "0785598694", // The specified phone number
           customer: state.personalDeliveryInfo.fullName,
           phoneNumber: state.personalDeliveryInfo.phoneNumber,
           district: state.personalDeliveryInfo.district,
@@ -106,11 +105,16 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         };
         
         // Send the order details via Supabase edge function
-        await supabase.functions.invoke('send-order-notification', {
+        const { data, error } = await supabase.functions.invoke('send-order-notification', {
           body: messageDetails
         });
         
-        console.log("Order notification sent successfully");
+        if (error) {
+          console.error("Error sending order notification:", error);
+          throw new Error(error.message);
+        }
+        
+        console.log("Order notification sent successfully:", data);
       }
     } catch (error) {
       console.error("Error sending order notification:", error);
@@ -125,9 +129,9 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       // Simulate processing delay
       await new Promise((resolve) => setTimeout(resolve, 1500));
       
-      // If personal delivery, send notification to specified phone
+      // If personal delivery, send notification
       if (state.deliveryMethod === "personal") {
-        await sendOrderDetailsToPhone();
+        await sendOrderNotification();
       }
       
       // In a real app, you would process the payment and order here
