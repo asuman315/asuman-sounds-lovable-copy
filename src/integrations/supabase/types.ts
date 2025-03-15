@@ -9,6 +9,57 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      orders: {
+        Row: {
+          amount: number
+          checkout_session_id: string | null
+          created_at: string
+          currency: string
+          customer_email: string | null
+          customer_name: string | null
+          delivery_method: string
+          id: string
+          items: Json
+          payment_status: string
+          personal_delivery_info: Json | null
+          shipping_address: Json | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          amount: number
+          checkout_session_id?: string | null
+          created_at?: string
+          currency?: string
+          customer_email?: string | null
+          customer_name?: string | null
+          delivery_method: string
+          id?: string
+          items: Json
+          payment_status?: string
+          personal_delivery_info?: Json | null
+          shipping_address?: Json | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          amount?: number
+          checkout_session_id?: string | null
+          created_at?: string
+          currency?: string
+          customer_email?: string | null
+          customer_name?: string | null
+          delivery_method?: string
+          id?: string
+          items?: Json
+          payment_status?: string
+          personal_delivery_info?: Json | null
+          shipping_address?: Json | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       product_images: {
         Row: {
           created_at: string
