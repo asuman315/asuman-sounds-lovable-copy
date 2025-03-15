@@ -5,6 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 
 type DeliveryMethod = "personal" | "shipping";
 type PaymentMethod = "stripe" | "cod";
+type DeliveryTime = "morning" | "afternoon" | "evening" | "any";
 
 interface Address {
   street: string;
@@ -14,10 +15,20 @@ interface Address {
   country: string;
 }
 
+interface PersonalDeliveryInfo {
+  fullName: string;
+  phoneNumber: string;
+  district: string;
+  email?: string;
+  cityOrTown?: string;
+  preferredTime: DeliveryTime;
+}
+
 interface CheckoutState {
   deliveryMethod: DeliveryMethod | null;
   paymentMethod: PaymentMethod | null;
   address: Address | null;
+  personalDeliveryInfo: PersonalDeliveryInfo | null;
   isProcessing: boolean;
 }
 
@@ -26,6 +37,7 @@ interface CheckoutContextType {
   setDeliveryMethod: (method: DeliveryMethod) => void;
   setPaymentMethod: (method: PaymentMethod) => void;
   setAddress: (address: Address) => void;
+  setPersonalDeliveryInfo: (info: PersonalDeliveryInfo) => void;
   processCheckout: () => Promise<void>;
   resetCheckout: () => void;
 }
@@ -34,6 +46,7 @@ const initialState: CheckoutState = {
   deliveryMethod: null,
   paymentMethod: null,
   address: null,
+  personalDeliveryInfo: null,
   isProcessing: false,
 };
 
@@ -54,6 +67,10 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   const setAddress = (address: Address) => {
     setState((prev) => ({ ...prev, address }));
+  };
+
+  const setPersonalDeliveryInfo = (personalDeliveryInfo: PersonalDeliveryInfo) => {
+    setState((prev) => ({ ...prev, personalDeliveryInfo }));
   };
 
   const processCheckout = async () => {
@@ -87,6 +104,7 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         setDeliveryMethod,
         setPaymentMethod,
         setAddress,
+        setPersonalDeliveryInfo,
         processCheckout,
         resetCheckout,
       }}
