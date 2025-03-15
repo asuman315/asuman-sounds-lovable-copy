@@ -16,13 +16,13 @@ serve(async (req) => {
   }
 
   try {
-    const { customer, phoneNumber, district, cityOrTown, preferredTime, items, totalAmount, email } = await req.json();
+    const { customer, phoneNumber, district, cityOrTown, preferredTime, items, totalAmount, email, itemsDetails } = await req.json();
 
     console.log(`Processing order notification for ${customer}`);
     console.log(`Order details: Customer: ${customer}, Phone: ${phoneNumber}, District: ${district}`);
     console.log(`Items: ${items}`);
     
-    // Format the message for email with improved styling
+    // Format the message for email with improved styling and product images
     const message = `
 <!DOCTYPE html>
 <html>
@@ -67,11 +67,30 @@ serve(async (req) => {
       width: 150px;
     }
     .item {
-      padding: 8px 0;
+      padding: 15px 0;
       border-bottom: 1px solid #f5f5f5;
+      display: flex;
+      align-items: center;
     }
     .item:last-child {
       border-bottom: none;
+    }
+    .item-image {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 6px;
+      margin-right: 15px;
+    }
+    .item-details {
+      flex: 1;
+    }
+    .item-title {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    .item-price {
+      color: #666;
     }
     .total {
       font-size: 18px;
@@ -105,7 +124,19 @@ serve(async (req) => {
     <div class="section">
       <h2>Order Items</h2>
       <div>
-        ${items.split('\n').map(item => `<div class="item">${item}</div>`).join('')}
+        ${itemsDetails && itemsDetails.length > 0 
+          ? itemsDetails.map(item => `
+            <div class="item">
+              ${item.imageUrl 
+                ? `<img src="${item.imageUrl}" alt="${item.title}" class="item-image" />`
+                : ''}
+              <div class="item-details">
+                <div class="item-title">${item.title} (${item.quantity})</div>
+                <div class="item-price">$${(item.price * item.quantity).toFixed(2)}</div>
+              </div>
+            </div>`).join('')
+          : items.split('\n').map(item => `<div class="item"><div class="item-details">${item}</div></div>`).join('')
+        }
       </div>
       <div class="total">Total Amount: ${totalAmount}</div>
     </div>

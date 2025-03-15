@@ -89,6 +89,16 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           `${item.product.title} (${item.quantity}) - $${(item.product.price * item.quantity).toFixed(2)}`
         ).join('\n');
         
+        // Prepare detailed item information including images
+        const itemsDetails = items.map(item => ({
+          title: item.product.title,
+          quantity: item.quantity,
+          price: item.product.price,
+          imageUrl: item.product.images && item.product.images.length > 0 
+            ? item.product.images[0].image_url 
+            : null
+        }));
+        
         // Get preferred time as user-friendly string
         const preferredTimeString = 
           state.personalDeliveryInfo.preferredTime === "morning" ? "Morning (8AM - 12PM)" :
@@ -104,6 +114,7 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           preferredTime: preferredTimeString,
           email: state.personalDeliveryInfo.email || "",
           items: orderItems,
+          itemsDetails: itemsDetails,
           totalAmount: `$${totalPrice.toFixed(2)}`,
         };
         

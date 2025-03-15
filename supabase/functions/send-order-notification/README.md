@@ -5,6 +5,7 @@ This Edge Function sends order notifications via email when a customer completes
 
 ## Features
 - Sends detailed order information including customer details and items ordered
+- Displays product images for a more visual and informative email
 - Formats the message in a beautiful, responsive HTML email
 - Sends email to the store administrator at asumanssendegeya@gmail.com
 - Includes customer contact information for follow-up
@@ -19,7 +20,15 @@ This Edge Function sends order notifications via email when a customer completes
   "cityOrTown": "city or town",
   "preferredTime": "preferred delivery time",
   "email": "customer email (optional)",
-  "items": "formatted list of items",
+  "items": "formatted list of items as text",
+  "itemsDetails": [
+    {
+      "title": "product title",
+      "quantity": "quantity ordered",
+      "price": "unit price",
+      "imageUrl": "url to product image"
+    }
+  ],
   "totalAmount": "total order amount"
 }
 ```
