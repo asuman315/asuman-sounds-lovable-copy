@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -50,6 +51,11 @@ const currencySymbols: Record<string, string> = {
 
 // Product categories
 const productCategories = [
+  { value: "headphones", label: "Headphones" },
+  { value: "speakers", label: "Speakers" },
+  { value: "earbuds", label: "Earbuds" },
+  { value: "accessories", label: "Accessories" },
+  { value: "new-releases", label: "New Releases" },
   { value: "audio", label: "Audio" },
   { value: "video", label: "Video" },
   { value: "software", label: "Software" },

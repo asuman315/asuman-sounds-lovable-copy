@@ -6,6 +6,11 @@ import { useAuth } from "@/contexts/AuthContext";
 
 // Product categories - same as in Admin.tsx
 const productCategories = [
+  { value: "headphones", label: "Headphones" },
+  { value: "speakers", label: "Speakers" },
+  { value: "earbuds", label: "Earbuds" },
+  { value: "accessories", label: "Accessories" },
+  { value: "new-releases", label: "New Releases" },
   { value: "audio", label: "Audio" },
   { value: "video", label: "Video" },
   { value: "software", label: "Software" },
