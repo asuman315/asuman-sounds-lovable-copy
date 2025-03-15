@@ -1,14 +1,33 @@
 import { Product, Category, ProductImage } from "@/types/product";
 
 export const categories: Category[] = [
-  { id: "headphones", name: "Headphones" },
-  { id: "speakers", name: "Speakers" },
-  { id: "earbuds", name: "Earbuds" },
-  { id: "accessories", name: "Accessories" },
-  { id: "vinyl", name: "Vinyl Players" },
+  {
+    id: "headphones",
+    name: "Headphones",
+    description: "Immerse yourself in rich, detailed sound with our premium over-ear headphones designed for audiophiles."
+  },
+  {
+    id: "speakers",
+    name: "Speakers",
+    description: "Fill your space with crystal-clear audio from our elegantly designed speakers that blend seamlessly with any décor."
+  },
+  {
+    id: "earbuds",
+    name: "Earbuds",
+    description: "Experience wireless freedom with our comfortable, noise-isolating earbuds perfect for on-the-go listening."
+  },
+  {
+    id: "accessories",
+    name: "Accessories",
+    description: "Enhance your audio experience with our premium cables, stands, and carrying cases designed for durability and style."
+  },
+  {
+    id: "vinyl",
+    name: "Vinyl",
+    description: "Rediscover the warmth and character of analog sound with our carefully curated vinyl collection and turntables."
+  }
 ];
 
-// Format the mock data to match our Supabase schema
 export const products: Product[] = [
   {
     id: "1",

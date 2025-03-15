@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Menu, X, User, LogOut, LogIn, UserPlus, PlusCircle, ShoppingBag, ShoppingCart } from "lucide-react";
@@ -24,7 +23,6 @@ const Header = () => {
   const location = useLocation();
   const isProductsPage = location.pathname === "/products";
 
-  // Add console logs to debug
   console.log("Header rendering, user state:", !!user);
   console.log("User object:", user);
 
@@ -44,7 +42,6 @@ const Header = () => {
   }, []);
 
   useEffect(() => {
-    // Close mobile menu when route changes
     setIsMobileMenuOpen(false);
     setIsCartOpen(false);
     document.body.style.overflow = "";
@@ -60,10 +57,8 @@ const Header = () => {
   };
 
   const scrollTo = (id: string) => {
-    // Only use scroll behavior on homepage
     if (location.pathname !== "/") {
       navigate("/");
-      // We need to wait for navigation to complete before scrolling
       setTimeout(() => {
         const element = document.getElementById(id);
         if (element) {
@@ -91,26 +86,21 @@ const Header = () => {
     navigate("/");
   };
 
-  // Define route paths and corresponding section IDs for smooth scrolling
   const navItems = [
     { name: "Home", href: "/", id: "hero", isPage: true },
     { name: "Products", href: "/products", id: null, isPage: true },
-    { name: "Categories", href: null, id: "categories", isPage: false },
+    { name: "Categories", href: "/categories", id: "categories", isPage: true },
     { name: "Features", href: null, id: "features", isPage: false },
     { name: "Featured", href: null, id: "featured-products", isPage: false },
     { name: "Contact", href: null, id: "contact", isPage: false },
   ];
 
-  // Check if a nav item is active based on pathname or section visibility
   const isActive = (item: typeof navItems[0]) => {
     if (item.isPage && item.href) {
-      // For page links, check if the current path matches the href exactly
       return location.pathname === item.href;
     }
     
-    // For section links, only highlight when on homepage and not for multiple sections
     if (!item.isPage && location.pathname === "/") {
-      // Only allow one section to be active at a time based on priority
       if (item.id === "featured-products" && !isActiveSection("categories") && !isActiveSection("features")) {
         return isActiveSection(item.id);
       }
@@ -125,8 +115,7 @@ const Header = () => {
     
     return false;
   };
-  
-  // Helper function to check if a section is currently visible
+
   const isActiveSection = (id: string | null) => {
     if (!id) return false;
     
@@ -141,11 +130,9 @@ const Header = () => {
     return isVisible;
   };
 
-  // Log authentication components being rendered
   console.log("Auth components rendering - user status:", user ? "logged in" : "logged out");
   console.log("Rendering header with links for admin:", user ? "showing add product" : "not showing");
 
-  // Determine text color based on scroll state and current page
   const textColor = (!isScrolled && isProductsPage) ? "text-white" : "text-foreground";
   const textHoverColor = (!isScrolled && isProductsPage) ? "hover:text-white/80" : "hover:text-primary";
 
@@ -155,8 +142,8 @@ const Header = () => {
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300 py-4 px-4 md:px-8",
         isScrolled
           ? "bg-white/70 backdrop-blur-md shadow-sm text-foreground"
-          : "bg-primary/10 backdrop-blur-sm", // Removed text-foreground to use dynamic text color
-        !isScrolled && isProductsPage && "bg-transparent" // Make transparent on products page before scrolling
+          : "bg-primary/10 backdrop-blur-sm",
+        !isScrolled && isProductsPage && "bg-transparent"
       )}
     >
       <div className="container max-w-7xl mx-auto flex items-center justify-between">
@@ -169,7 +156,6 @@ const Header = () => {
           </Link>
         </div>
 
-        {/* Desktop Navigation */}
         <nav className="hidden md:flex space-x-8">
           {navItems.map((item) => (
             item.isPage ? (
@@ -218,7 +204,6 @@ const Header = () => {
           ))}
         </nav>
 
-        {/* Authentication Buttons */}
         <div className="hidden md:flex items-center space-x-4">
           {user ? (
             <>
@@ -264,7 +249,6 @@ const Header = () => {
             </>
           ) : (
             <>
-              {/* Log when rendering sign-in/sign-up buttons */}
               {console.log("Rendering sign-in/sign-up buttons")}
               <Button 
                 variant="outline" 
@@ -299,7 +283,6 @@ const Header = () => {
             </>
           )}
           
-          {/* Cart button */}
           <button 
             className={cn(
               "relative p-2 rounded-full transition-all duration-300 hover:bg-primary/10",
@@ -333,9 +316,7 @@ const Header = () => {
           </Button>
         </div>
 
-        {/* Mobile Navigation Toggle & Cart Icon */}
         <div className="flex items-center gap-4 md:hidden">
-          {/* Mobile Cart Button */}
           <button 
             className={cn(
               "relative p-1 transition-all duration-300",
@@ -352,7 +333,6 @@ const Header = () => {
             )}
           </button>
           
-          {/* Mobile Menu Toggle */}
           <button
             className={cn(
               "p-1",
@@ -370,7 +350,6 @@ const Header = () => {
         </div>
       </div>
 
-      {/* Mobile Navigation */}
       <div
         className={cn(
           "fixed inset-0 bg-white z-40 transition-transform duration-300 md:hidden",
@@ -425,7 +404,6 @@ const Header = () => {
             </>
           ) : (
             <>
-              {/* Log when rendering mobile sign-in/sign-up links */}
               {console.log("Rendering mobile sign-in/sign-up links")}
               <Link
                 to="/login"
@@ -466,7 +444,6 @@ const Header = () => {
         </div>
       </div>
       
-      {/* Cart Dropdown */}
       <CartDropdown isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
     </header>
   );
