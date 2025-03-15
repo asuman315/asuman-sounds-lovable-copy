@@ -12,9 +12,7 @@ interface FeaturedProductProps {
 
 const FeaturedProduct = ({ product, index }: FeaturedProductProps) => {
   const calculateDiscountedPrice = () => {
-    if (product.original_price && product.original_price > product.price) {
-      return product.price;
-    }
+    // We always use the current price
     return product.price;
   };
   
@@ -28,8 +26,12 @@ const FeaturedProduct = ({ product, index }: FeaturedProductProps) => {
     currency: product.currency || 'USD',
   }).format(product.original_price) : null;
   
-  const discountPercentage = product.original_price ? 
-    Math.round(((product.original_price - product.price) / product.original_price) * 100) : null;
+  // For discount percentage calculation, we should use comparable_price if available
+  // This reflects the market price comparison
+  const discountPercentage = product.comparable_price && product.comparable_price > product.price ? 
+    Math.round(((product.comparable_price - product.price) / product.comparable_price) * 100) : 
+    (product.original_price && product.original_price > product.price ? 
+      Math.round(((product.original_price - product.price) / product.original_price) * 100) : null);
   
   const mainImage = product.images && product.images.length > 0 ? 
     product.images.find(img => img.is_main)?.image_url || product.images[0].image_url : 
@@ -69,7 +71,7 @@ const FeaturedProduct = ({ product, index }: FeaturedProductProps) => {
         
         <div className="flex items-baseline mb-6">
           <span className="text-2xl font-bold">{formattedPrice}</span>
-          {originalPrice && (
+          {originalPrice && product.original_price > product.price && (
             <span className="ml-2 text-gray-500 line-through">{originalPrice}</span>
           )}
           {discountPercentage && discountPercentage > 0 && (

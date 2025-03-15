@@ -21,9 +21,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
   };
   
   const calculateDiscountedPrice = () => {
-    if (product.original_price && product.original_price > product.price) {
-      return product.price;
-    }
+    // Always use the current price
     return product.price;
   };
   
@@ -36,6 +34,12 @@ const ProductCard = ({ product }: ProductCardProps) => {
     style: 'currency',
     currency: product.currency || 'USD',
   }).format(product.original_price) : null;
+
+  // Use comparable_price for discount calculation if available
+  const discountPercentage = product.comparable_price && product.comparable_price > product.price ? 
+    Math.round(((product.comparable_price - product.price) / product.comparable_price) * 100) : 
+    (product.original_price && product.original_price > product.price ? 
+      Math.round(((product.original_price - product.price) / product.original_price) * 100) : null);
 
   // Format the description by removing HTML tags and limiting length
   const formatDescription = (description: string) => {
@@ -91,9 +95,9 @@ const ProductCard = ({ product }: ProductCardProps) => {
           
           {/* Badges */}
           <div className="absolute top-3 left-3 flex flex-col gap-2">
-            {product.original_price && product.original_price > product.price && (
+            {discountPercentage && discountPercentage > 0 && (
               <span className="px-2 py-1 text-xs font-medium rounded-full bg-red-500 text-white">
-                {Math.round(((product.original_price - product.price) / product.original_price) * 100)}% OFF
+                {discountPercentage}% OFF
               </span>
             )}
             {product.stock_count <= 0 && (
@@ -120,9 +124,12 @@ const ProductCard = ({ product }: ProductCardProps) => {
             <span className="text-xl font-semibold">
               {formattedPrice}
             </span>
-            {originalPrice && product.original_price > product.price && (
+            {product.comparable_price && product.comparable_price > product.price && (
               <span className="text-sm text-gray-500 line-through">
-                {originalPrice}
+                {new Intl.NumberFormat('en-US', {
+                  style: 'currency',
+                  currency: product.currency || 'USD',
+                }).format(product.comparable_price)}
               </span>
             )}
           </div>
