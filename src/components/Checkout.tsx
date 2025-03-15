@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Truck, CreditCard, Check, ArrowRight, Home, MapPin, Clock, Phone, Mail, User } from "lucide-react";
@@ -341,11 +340,10 @@ const Checkout = () => {
                   <FormItem>
                     <FormLabel>Full Name*</FormLabel>
                     <FormControl>
-                      <Input 
-                        placeholder="John Doe" 
-                        {...field} 
-                        icon={<User className="h-4 w-4 text-muted-foreground" />}
-                      />
+                      <div className="relative">
+                        <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input placeholder="John Doe" className="pl-10" {...field} />
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -359,11 +357,10 @@ const Checkout = () => {
                   <FormItem>
                     <FormLabel>Phone Number*</FormLabel>
                     <FormControl>
-                      <Input 
-                        placeholder="+1 (555) 123-4567" 
-                        {...field} 
-                        icon={<Phone className="h-4 w-4 text-muted-foreground" />}
-                      />
+                      <div className="relative">
+                        <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input placeholder="+1 (555) 123-4567" className="pl-10" {...field} />
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -392,11 +389,10 @@ const Checkout = () => {
                     <FormItem>
                       <FormLabel>Email (Optional)</FormLabel>
                       <FormControl>
-                        <Input 
-                          placeholder="example@email.com" 
-                          {...field} 
-                          icon={<Mail className="h-4 w-4 text-muted-foreground" />}
-                        />
+                        <div className="relative">
+                          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                          <Input placeholder="example@email.com" className="pl-10" {...field} />
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
