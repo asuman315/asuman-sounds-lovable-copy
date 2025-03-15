@@ -1,7 +1,9 @@
+
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Truck, CreditCard, Check, ArrowRight, Home, MapPin, Clock, Phone, Mail, User } from "lucide-react";
+import { Truck, CreditCard, Check, ArrowRight, Home, MapPin, Clock, Phone, Mail, User, ShoppingBag } from "lucide-react";
 import { useCheckout } from "@/contexts/CheckoutContext";
+import { useCart } from "@/contexts/CartContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -36,6 +38,7 @@ type PersonalDeliveryForm = z.infer<typeof personalDeliverySchema>;
 
 const Checkout = () => {
   const { state, setDeliveryMethod, setPaymentMethod, setAddress, setPersonalDeliveryInfo, processCheckout } = useCheckout();
+  const { items, totalPrice } = useCart();
   const [step, setStep] = useState<"options" | "address" | "personal" | "summary">("options");
   
   const addressForm = useForm<AddressForm>({
@@ -496,8 +499,17 @@ const Checkout = () => {
           <div className="space-y-2">
             <h3 className="text-sm font-medium">Payment Method</h3>
             <div className="flex items-center p-3 bg-primary/5 rounded-md">
-              <CreditCard className="w-5 h-5 mr-2 text-primary" />
-              <span>Stripe Payment</span>
+              {state.paymentMethod === "cod" ? (
+                <>
+                  <ShoppingBag className="w-5 h-5 mr-2 text-primary" />
+                  <span>Cash on Delivery</span>
+                </>
+              ) : (
+                <>
+                  <CreditCard className="w-5 h-5 mr-2 text-primary" />
+                  <span>Stripe Payment</span>
+                </>
+              )}
             </div>
           </div>
           
@@ -533,6 +545,36 @@ const Checkout = () => {
               </div>
             </div>
           )}
+          
+          <div className="space-y-2">
+            <h3 className="text-sm font-medium">Order Items</h3>
+            <div className="p-3 bg-primary/5 rounded-md space-y-3">
+              {items.map((item) => (
+                <div key={item.product.id} className="flex justify-between items-center border-b pb-2 last:border-0 last:pb-0">
+                  <div className="flex items-center">
+                    <div className="w-12 h-12 rounded-md overflow-hidden bg-gray-100 mr-3">
+                      {item.product.images && item.product.images[0] && (
+                        <img 
+                          src={item.product.images[0]} 
+                          alt={item.product.title} 
+                          className="w-full h-full object-cover"
+                        />
+                      )}
+                    </div>
+                    <div>
+                      <p className="font-medium text-sm">{item.product.title}</p>
+                      <p className="text-muted-foreground text-xs">Qty: {item.quantity}</p>
+                    </div>
+                  </div>
+                  <p className="font-medium">${(item.product.price * item.quantity).toFixed(2)}</p>
+                </div>
+              ))}
+              <div className="flex justify-between items-center pt-2 font-medium">
+                <span>Total:</span>
+                <span>${totalPrice.toFixed(2)}</span>
+              </div>
+            </div>
+          </div>
         </CardContent>
         <CardFooter className="flex justify-between">
           <Button 

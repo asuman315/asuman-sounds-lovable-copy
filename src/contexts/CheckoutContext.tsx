@@ -59,6 +59,13 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   const setDeliveryMethod = (method: DeliveryMethod) => {
     setState((prev) => ({ ...prev, deliveryMethod: method }));
+    
+    // If switching to personal delivery, set payment method to COD by default
+    if (method === "personal") {
+      setState((prev) => ({ ...prev, deliveryMethod: method, paymentMethod: "cod" }));
+    } else {
+      setState((prev) => ({ ...prev, deliveryMethod: method }));
+    }
   };
 
   const setPaymentMethod = (method: PaymentMethod) => {
