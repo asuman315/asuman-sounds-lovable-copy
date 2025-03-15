@@ -22,6 +22,7 @@ const Header = () => {
   const { totalItems } = useCart();
   const navigate = useNavigate();
   const location = useLocation();
+  const isProductsPage = location.pathname === "/products";
 
   // Add console logs to debug
   console.log("Header rendering, user state:", !!user);
@@ -102,20 +103,25 @@ const Header = () => {
   console.log("Auth components rendering - user status:", user ? "logged in" : "logged out");
   console.log("Rendering header with links for admin:", user ? "showing add product" : "not showing");
 
+  // Determine text color based on scroll state and current page
+  const textColor = (!isScrolled && isProductsPage) ? "text-white" : "text-foreground";
+  const textHoverColor = (!isScrolled && isProductsPage) ? "hover:text-white/80" : "hover:text-primary";
+
   return (
     <header
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300 py-4 px-4 md:px-8",
         isScrolled
           ? "bg-white/70 backdrop-blur-md shadow-sm text-foreground"
-          : "bg-primary/10 backdrop-blur-sm text-foreground" // Changed to be visible before scrolling
+          : "bg-primary/10 backdrop-blur-sm", // Removed text-foreground to use dynamic text color
+        !isScrolled && isProductsPage && "bg-transparent" // Make transparent on products page before scrolling
       )}
     >
       <div className="container max-w-7xl mx-auto flex items-center justify-between">
         <div className="flex items-center">
           <Link to="/" className="flex items-center space-x-2">
             <span className={cn("font-bold text-xl", 
-              isScrolled ? "text-gradient" : "text-foreground")}>
+              isScrolled ? "text-gradient" : textColor)}>
               Asuman Sounds
             </span>
           </Link>
@@ -130,13 +136,14 @@ const Header = () => {
                 to={item.href}
                 className={cn(
                   "text-sm font-medium transition-colors relative group",
-                  isScrolled ? "text-foreground/80 hover:text-primary" : "text-foreground/90 hover:text-primary"
+                  isScrolled ? "text-foreground/80 hover:text-primary" : 
+                  `${textColor}/90 ${textHoverColor}`
                 )}
               >
                 {item.name}
                 <span className={cn(
                   "absolute bottom-[-4px] left-0 w-0 h-[2px] transition-all duration-300 group-hover:w-full",
-                  isScrolled ? "bg-primary" : "bg-primary"
+                  isScrolled ? "bg-primary" : "bg-white"
                 )}></span>
               </Link>
             ) : (
@@ -145,13 +152,14 @@ const Header = () => {
                 onClick={() => scrollTo(item.href)}
                 className={cn(
                   "text-sm font-medium transition-colors relative group",
-                  isScrolled ? "text-foreground/80 hover:text-primary" : "text-foreground/90 hover:text-primary"
+                  isScrolled ? "text-foreground/80 hover:text-primary" : 
+                  `${textColor}/90 ${textHoverColor}`
                 )}
               >
                 {item.name}
                 <span className={cn(
                   "absolute bottom-[-4px] left-0 w-0 h-[2px] transition-all duration-300 group-hover:w-full",
-                  isScrolled ? "bg-primary" : "bg-primary"
+                  isScrolled ? "bg-primary" : "bg-white"
                 )}></span>
               </button>
             )
@@ -169,7 +177,8 @@ const Header = () => {
                   "flex items-center gap-1 transition-all duration-300",
                   isScrolled ? 
                     "hover:bg-primary/10" : 
-                    "hover:bg-primary/10 bg-transparent"
+                    "hover:bg-primary/10 bg-transparent border-white/30",
+                  !isScrolled && isProductsPage && "text-white border-white/30"
                 )}
                 asChild
               >
@@ -185,7 +194,8 @@ const Header = () => {
                     size="sm" 
                     className={cn(
                       "relative rounded-full",
-                      !isScrolled && "hover:bg-primary/10 bg-transparent"
+                      !isScrolled && "hover:bg-primary/10 bg-transparent border-white/30",
+                      !isScrolled && isProductsPage && "text-white"
                     )}
                   >
                     <User size={18} />
@@ -209,7 +219,8 @@ const Header = () => {
                 size="sm" 
                 className={cn(
                   "flex items-center gap-1",
-                  !isScrolled && "hover:bg-primary/10 bg-transparent"
+                  !isScrolled && "hover:bg-primary/10 bg-transparent border-white/30",
+                  !isScrolled && isProductsPage && "text-white"
                 )} 
                 asChild
               >
@@ -223,7 +234,8 @@ const Header = () => {
                 size="sm" 
                 className={cn(
                   "flex items-center gap-1",
-                  !isScrolled && "hover:bg-primary/10 bg-transparent"
+                  !isScrolled && "hover:bg-primary/10 bg-transparent border-white/30",
+                  !isScrolled && isProductsPage && "text-white"
                 )} 
                 asChild
               >
@@ -239,7 +251,7 @@ const Header = () => {
           <button 
             className={cn(
               "relative p-2 rounded-full transition-all duration-300 hover:bg-primary/10",
-              isScrolled ? "text-foreground" : "text-foreground"
+              isScrolled ? "text-foreground" : textColor
             )}
             onClick={toggleCart}
             aria-label="Open cart"
@@ -257,7 +269,8 @@ const Header = () => {
               "hidden md:flex items-center transition-all duration-300",
               isScrolled ? 
                 "bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-700" : 
-                "bg-primary/80 text-white hover:bg-primary"
+                !isProductsPage ? "bg-primary/80 text-white hover:bg-primary" :
+                "bg-white/20 backdrop-blur-sm text-white border border-white/30 hover:bg-white/30"
             )}
             asChild
           >
@@ -274,7 +287,7 @@ const Header = () => {
           <button 
             className={cn(
               "relative p-1 transition-all duration-300",
-              isScrolled ? "text-foreground" : "text-foreground"
+              isScrolled ? "text-foreground" : textColor
             )}
             onClick={toggleCart}
             aria-label="Open cart"
@@ -291,7 +304,7 @@ const Header = () => {
           <button
             className={cn(
               "p-1",
-              isScrolled ? "text-foreground" : "text-foreground"
+              isScrolled ? "text-foreground" : textColor
             )}
             onClick={toggleMobileMenu}
             aria-label="Toggle menu"
