@@ -95,6 +95,7 @@ const Header = () => {
   const navItems = [
     { name: "Home", href: "/", id: "hero", isPage: true },
     { name: "Products", href: "/products", id: null, isPage: true },
+    { name: "Categories", href: null, id: "categories", isPage: false },
     { name: "Features", href: null, id: "features", isPage: false },
     { name: "Featured", href: null, id: "featured-products", isPage: false },
     { name: "Contact", href: null, id: "contact", isPage: false },
@@ -103,12 +104,41 @@ const Header = () => {
   // Check if a nav item is active based on pathname or section visibility
   const isActive = (item: typeof navItems[0]) => {
     if (item.isPage && item.href) {
-      // For page links, check if the current path matches or starts with the href
-      return location.pathname === item.href || 
-             (item.href !== "/" && location.pathname.startsWith(item.href));
+      // For page links, check if the current path matches the href exactly
+      return location.pathname === item.href;
     }
-    // For section links, we'll handle this with scroll observation in a more complex implementation
+    
+    // For section links, only highlight when on homepage and not for multiple sections
+    if (!item.isPage && location.pathname === "/") {
+      // Only allow one section to be active at a time based on priority
+      if (item.id === "featured-products" && !isActiveSection("categories") && !isActiveSection("features")) {
+        return isActiveSection(item.id);
+      }
+      if (item.id === "features" && !isActiveSection("categories")) {
+        return isActiveSection(item.id);
+      }
+      if (item.id === "categories") {
+        return isActiveSection(item.id);
+      }
+      return false;
+    }
+    
     return false;
+  };
+  
+  // Helper function to check if a section is currently visible
+  const isActiveSection = (id: string | null) => {
+    if (!id) return false;
+    
+    const element = document.getElementById(id);
+    if (!element) return false;
+    
+    const rect = element.getBoundingClientRect();
+    const isVisible = 
+      rect.top <= (window.innerHeight / 3) && 
+      rect.bottom >= (window.innerHeight / 3);
+    
+    return isVisible;
   };
 
   // Log authentication components being rendered

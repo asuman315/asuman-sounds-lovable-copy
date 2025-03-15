@@ -35,8 +35,8 @@ const FeaturedProducts = () => {
         </div>
 
         {isLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
-            {[...Array(4)].map((_, index) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+            {[...Array(3)].map((_, index) => (
               <div key={index} className="glass-card overflow-hidden">
                 <div className="aspect-square">
                   <Skeleton className="h-full w-full" />
@@ -54,7 +54,7 @@ const FeaturedProducts = () => {
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {featuredProducts && featuredProducts.length > 0 ? (
               featuredProducts.map((product, index) => (
                 <FeaturedProduct 
