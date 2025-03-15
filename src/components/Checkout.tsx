@@ -56,7 +56,14 @@ const Checkout = () => {
   };
 
   const onAddressSubmit = (data: AddressForm) => {
-    setAddress(data);
+    // Now we're passing a complete address object that matches the required type
+    setAddress({
+      street: data.street,
+      city: data.city,
+      state: data.state,
+      zip: data.zip,
+      country: data.country
+    });
     setStep("summary");
   };
 
