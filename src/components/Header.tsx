@@ -91,13 +91,25 @@ const Header = () => {
     navigate("/");
   };
 
+  // Define route paths and corresponding section IDs for smooth scrolling
   const navItems = [
-    { name: "Home", href: "hero", isPage: false },
-    { name: "Products", href: "/products", isPage: true },
-    { name: "Features", href: "features", isPage: false },
-    { name: "Team", href: "team", isPage: false },
-    { name: "Contact", href: "contact", isPage: false },
+    { name: "Home", href: "/", id: "hero", isPage: true },
+    { name: "Products", href: "/products", id: null, isPage: true },
+    { name: "Features", href: null, id: "features", isPage: false },
+    { name: "Featured", href: null, id: "featured-products", isPage: false },
+    { name: "Contact", href: null, id: "contact", isPage: false },
   ];
+
+  // Check if a nav item is active based on pathname or section visibility
+  const isActive = (item: typeof navItems[0]) => {
+    if (item.isPage && item.href) {
+      // For page links, check if the current path matches or starts with the href
+      return location.pathname === item.href || 
+             (item.href !== "/" && location.pathname.startsWith(item.href));
+    }
+    // For section links, we'll handle this with scroll observation in a more complex implementation
+    return false;
+  };
 
   // Log authentication components being rendered
   console.log("Auth components rendering - user status:", user ? "logged in" : "logged out");
@@ -133,32 +145,42 @@ const Header = () => {
             item.isPage ? (
               <Link
                 key={item.name}
-                to={item.href}
+                to={item.href || "#"}
                 className={cn(
                   "text-sm font-medium transition-colors relative group",
-                  isScrolled ? "text-foreground/80 hover:text-primary" : 
-                  `${textColor}/90 ${textHoverColor}`
+                  isActive(item) ? 
+                    "text-primary font-semibold" : 
+                    isScrolled ? "text-foreground/80 hover:text-primary" : 
+                    `${textColor}/90 ${textHoverColor}`
                 )}
               >
                 {item.name}
                 <span className={cn(
-                  "absolute bottom-[-4px] left-0 w-0 h-[2px] transition-all duration-300 group-hover:w-full",
+                  "absolute bottom-[-4px] left-0 h-[2px] transition-all duration-300",
+                  isActive(item) ? 
+                    "w-full bg-primary" : 
+                    "w-0 group-hover:w-full",
                   isScrolled ? "bg-primary" : "bg-white"
                 )}></span>
               </Link>
             ) : (
               <button
                 key={item.name}
-                onClick={() => scrollTo(item.href)}
+                onClick={() => scrollTo(item.id || "")}
                 className={cn(
                   "text-sm font-medium transition-colors relative group",
-                  isScrolled ? "text-foreground/80 hover:text-primary" : 
-                  `${textColor}/90 ${textHoverColor}`
+                  location.pathname === "/" && item.id === "featured-products" ? 
+                    "text-primary font-semibold" : 
+                    isScrolled ? "text-foreground/80 hover:text-primary" : 
+                    `${textColor}/90 ${textHoverColor}`
                 )}
               >
                 {item.name}
                 <span className={cn(
-                  "absolute bottom-[-4px] left-0 w-0 h-[2px] transition-all duration-300 group-hover:w-full",
+                  "absolute bottom-[-4px] left-0 h-[2px] transition-all duration-300",
+                  location.pathname === "/" && item.id === "featured-products" ? 
+                    "w-full bg-primary" : 
+                    "w-0 group-hover:w-full",
                   isScrolled ? "bg-primary" : "bg-white"
                 )}></span>
               </button>

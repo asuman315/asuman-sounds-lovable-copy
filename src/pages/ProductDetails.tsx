@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -7,6 +6,7 @@ import { useCart } from "@/contexts/CartContext";
 import { getProductById } from "@/services/ProductService";
 import { Product } from "@/types/product";
 import AnimatedElement from "@/components/AnimatedElement";
+import Header from "@/components/Header";
 import { 
   ArrowLeft, 
   ShoppingCart, 
@@ -89,17 +89,14 @@ const ProductDetails = () => {
     );
   }
 
-  // Format the description by removing HTML tags
   const formatDescription = (description: string) => {
     return description.replace(/<[^>]*>/g, '');
   };
 
-  // Default placeholder images if none provided
   const productImages = product.images && product.images.length > 0 
     ? product.images.map(img => img.image_url)
     : ["https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3"];
 
-  // Format prices
   const formattedPrice = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: product.currency || 'USD',
@@ -110,24 +107,23 @@ const ProductDetails = () => {
     currency: product.currency || 'USD',
   }).format(product.comparable_price) : null;
 
-  // Calculate discount percentage
   const discountPercentage = product.comparable_price && product.comparable_price > product.price ? 
     Math.round(((product.comparable_price - product.price) / product.comparable_price) * 100) : null;
 
   return (
     <div className="bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-950 min-h-screen">
-      {/* Navigation breadcrumb */}
-      <div className="container max-w-7xl mx-auto pt-8 px-4 sm:px-6">
+      <Header />
+      
+      <div className="container max-w-7xl mx-auto pt-20 px-4 sm:px-6">
         <nav className="flex items-center text-sm text-gray-500 dark:text-gray-400">
           <Link to="/" className="hover:text-primary transition-colors">Home</Link>
           <ChevronRight className="h-4 w-4 mx-2" />
           <Link to="/products" className="hover:text-primary transition-colors">Products</Link>
           <ChevronRight className="h-4 w-4 mx-2" />
-          <span className="text-gray-800 dark:text-gray-200 font-medium truncate">{product.title}</span>
+          <span className="text-gray-800 dark:text-gray-200 font-medium truncate">{product?.title}</span>
         </nav>
       </div>
       
-      {/* Back button for mobile */}
       <div className="container max-w-7xl mx-auto pt-4 px-4 sm:px-6 md:hidden">
         <Button 
           variant="outline" 
@@ -142,29 +138,23 @@ const ProductDetails = () => {
         </Button>
       </div>
 
-      {/* Main product section */}
       <main className="container max-w-7xl mx-auto pt-8 pb-16 px-4 sm:px-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-          {/* Product images */}
           <AnimatedElement animation="fade-in-left" className="h-full">
             <ProductGallery images={productImages} />
           </AnimatedElement>
 
-          {/* Product info */}
           <AnimatedElement animation="fade-in-right" className="flex flex-col">
-            {/* Category tag */}
             <div className="mb-4">
               <span className="inline-block bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 text-xs font-medium px-2.5 py-1 rounded-full">
                 {product.category}
               </span>
             </div>
 
-            {/* Product title */}
             <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2">
               {product.title}
             </h1>
 
-            {/* Product rating */}
             <div className="flex items-center mb-6">
               <div className="flex items-center">
                 {[1, 2, 3, 4, 5].map((rating) => (
@@ -177,7 +167,6 @@ const ProductDetails = () => {
               <span className="text-sm text-gray-500 dark:text-gray-400 ml-2">4.0 (24 reviews)</span>
             </div>
 
-            {/* Price */}
             <div className="flex items-baseline mb-6">
               <span className="text-3xl font-bold text-gray-900 dark:text-white">
                 {formattedPrice}
@@ -194,14 +183,12 @@ const ProductDetails = () => {
               )}
             </div>
 
-            {/* Description */}
             <div className="prose prose-sm dark:prose-invert max-w-none mb-8">
               <p className="text-gray-600 dark:text-gray-300">
                 {formatDescription(product.description)}
               </p>
             </div>
 
-            {/* Stock information */}
             <div className="mb-8">
               <p className="flex items-center text-sm font-medium">
                 {product.stock_count > 0 ? (
@@ -223,7 +210,6 @@ const ProductDetails = () => {
               </p>
             </div>
 
-            {/* Actions */}
             <div className="flex gap-4 mb-8">
               <Button 
                 className={`flex-1 h-12 rounded-full relative overflow-hidden transition-all duration-300 ${
@@ -272,7 +258,6 @@ const ProductDetails = () => {
               </Button>
             </div>
 
-            {/* Benefits/Features */}
             <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-4 mb-8 backdrop-blur-sm">
               <ul className="space-y-3">
                 <li className="flex items-start">
@@ -299,7 +284,6 @@ const ProductDetails = () => {
               </ul>
             </div>
 
-            {/* Collapsible details sections */}
             <div className="space-y-3 border rounded-xl overflow-hidden">
               <Collapsible
                 open={expandedSection === "description"}
@@ -352,7 +336,6 @@ const ProductDetails = () => {
         </div>
       </main>
 
-      {/* Reviews section */}
       <section className="bg-white dark:bg-gray-950 py-16">
         <div className="container max-w-7xl mx-auto px-4 sm:px-6">
           <AnimatedElement animation="fade-in" className="mb-12">
@@ -364,7 +347,6 @@ const ProductDetails = () => {
         </div>
       </section>
 
-      {/* Related products */}
       <section className="bg-gray-50 dark:bg-gray-900 py-16">
         <div className="container max-w-7xl mx-auto px-4 sm:px-6">
           <AnimatedElement animation="fade-in" className="mb-12">
