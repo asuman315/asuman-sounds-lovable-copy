@@ -48,6 +48,17 @@ const currencySymbols: Record<string, string> = {
   AUD: "A$"
 };
 
+// Product categories
+const productCategories = [
+  { value: "audio", label: "Audio" },
+  { value: "video", label: "Video" },
+  { value: "software", label: "Software" },
+  { value: "preset", label: "Preset" },
+  { value: "sample", label: "Sample Pack" },
+  { value: "instrument", label: "Virtual Instrument" },
+  { value: "other", label: "Other" }
+];
+
 // Form validation schema
 const audioProductSchema = z.object({
   title: z.string()
@@ -58,6 +69,7 @@ const audioProductSchema = z.object({
     message: "Price must be a positive number",
   }),
   currency: z.string().default("USD"),
+  category: z.string().default("audio"),
   originalPrice: z.string().optional().refine((val) => !val || !isNaN(Number(val)) && Number(val) >= 0, {
     message: "Original price must be a non-negative number",
   }),
@@ -93,6 +105,7 @@ const AdminPage = () => {
       description: "",
       price: "",
       currency: "USD",
+      category: "audio",
       originalPrice: "",
       comparablePrice: "",
       stockCount: "0",
@@ -197,6 +210,7 @@ const AdminPage = () => {
           description: values.description,
           price: Number(values.price),
           currency: values.currency,
+          category: values.category,
           original_price: values.originalPrice ? Number(values.originalPrice) : null,
           comparable_price: values.comparablePrice ? Number(values.comparablePrice) : null,
           stock_count: Number(values.stockCount),
@@ -292,6 +306,37 @@ const AdminPage = () => {
                               maxLength={70}
                             />
                           </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="category"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Category</FormLabel>
+                          <Select 
+                            onValueChange={field.onChange} 
+                            defaultValue={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select category" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {productCategories.map((category) => (
+                                <SelectItem key={category.value} value={category.value}>
+                                  {category.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormDescription>
+                            Choose the category that best fits your product
+                          </FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}

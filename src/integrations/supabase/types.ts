@@ -46,6 +46,7 @@ export type Database = {
       }
       products: {
         Row: {
+          category: string
           comparable_price: number | null
           created_at: string
           currency: string
@@ -60,6 +61,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          category?: string
           comparable_price?: number | null
           created_at?: string
           currency?: string
@@ -74,6 +76,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          category?: string
           comparable_price?: number | null
           created_at?: string
           currency?: string
