@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { Product, ProductImage, Category } from "@/types/product";
 
@@ -32,6 +31,36 @@ export const getProducts = async (): Promise<Product[]> => {
   }) || [];
 
   return productsWithImages;
+};
+
+export const getProductById = async (productId: string): Promise<Product | null> => {
+  const { data: product, error: productError } = await supabase
+    .from('products')
+    .select('*')
+    .eq('id', productId)
+    .single();
+  
+  if (productError) {
+    console.error("Error fetching product:", productError);
+    return null;
+  }
+
+  // Fetch images for this product
+  const { data: images, error: imagesError } = await supabase
+    .from('product_images')
+    .select('*')
+    .eq('product_id', productId);
+
+  if (imagesError) {
+    console.error("Error fetching product images:", imagesError);
+    return product;
+  }
+
+  // Add images to the product
+  return {
+    ...product,
+    images: images || [],
+  };
 };
 
 export const getFeaturedProducts = async (): Promise<Product[]> => {

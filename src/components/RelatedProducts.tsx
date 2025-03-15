@@ -1,7 +1,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { getProductsList } from "@/services/ProductService";
+import { getProducts } from "@/services/ProductService";
 import { Product } from "@/types/product";
 import ProductCard from "@/components/ProductCard";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -15,16 +15,14 @@ interface RelatedProductsProps {
 const RelatedProducts = ({ currentProductId, category }: RelatedProductsProps) => {
   const { data: products, isLoading } = useQuery({
     queryKey: ['products', { category }],
-    queryFn: () => getProductsList({
-      category,
-      limit: 12,
-    }),
+    queryFn: () => getProducts(),
   });
 
   // Filter out the current product and limit to 4 related products
   const relatedProducts = products
     ? products
         .filter(product => product.id !== currentProductId)
+        .filter(product => !category || product.category === category)
         .slice(0, 4)
     : [];
 
