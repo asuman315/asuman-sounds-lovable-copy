@@ -31,6 +31,7 @@ interface CheckoutState {
   address: Address | null;
   personalDeliveryInfo: PersonalDeliveryInfo | null;
   isProcessing: boolean;
+  showAuthModal: boolean;
 }
 
 interface CheckoutContextType {
@@ -41,6 +42,8 @@ interface CheckoutContextType {
   setPersonalDeliveryInfo: (info: PersonalDeliveryInfo) => void;
   processCheckout: () => Promise<void>;
   resetCheckout: () => void;
+  closeAuthModal: () => void;
+  handleAuthSuccess: () => void;
 }
 
 const initialState: CheckoutState = {
@@ -49,6 +52,7 @@ const initialState: CheckoutState = {
   address: null,
   personalDeliveryInfo: null,
   isProcessing: false,
+  showAuthModal: false,
 };
 
 const CheckoutContext = createContext<CheckoutContextType | undefined>(undefined);
@@ -62,7 +66,6 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const setDeliveryMethod = (method: DeliveryMethod) => {
     setState((prev) => ({ ...prev, deliveryMethod: method }));
     
-    // If switching to personal delivery, set payment method to COD by default
     if (method === "personal") {
       setState((prev) => ({ ...prev, deliveryMethod: method, paymentMethod: "cod" }));
     } else {
@@ -85,12 +88,10 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const sendOrderNotification = async () => {
     try {
       if (state.deliveryMethod === "personal" && state.personalDeliveryInfo) {
-        // Format order details
         const orderItems = items.map(item => 
           `${item.product.title} (${item.quantity}) - $${(item.product.price * item.quantity).toFixed(2)}`
         ).join('\n');
         
-        // Prepare detailed item information including images
         const itemsDetails = items.map(item => ({
           title: item.product.title,
           quantity: item.quantity,
@@ -100,13 +101,11 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             : null
         }));
         
-        // Get preferred time as user-friendly string
         const preferredTimeString = 
           state.personalDeliveryInfo.preferredTime === "morning" ? "Morning (8AM - 12PM)" :
           state.personalDeliveryInfo.preferredTime === "afternoon" ? "Afternoon (12PM - 5PM)" :
           state.personalDeliveryInfo.preferredTime === "evening" ? "Evening (5PM - 9PM)" : "Any Time";
         
-        // Prepare order details for the email
         const messageDetails = {
           customer: state.personalDeliveryInfo.fullName,
           phoneNumber: state.personalDeliveryInfo.phoneNumber,
@@ -119,7 +118,6 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           totalAmount: `$${totalPrice.toFixed(2)}`,
         };
         
-        // Send the order details via Supabase edge function
         const { data, error } = await supabase.functions.invoke('send-order-notification', {
           body: messageDetails
         });
@@ -133,13 +131,20 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       }
     } catch (error) {
       console.error("Error sending order notification:", error);
-      // Don't throw here - we want the checkout to complete even if notification fails
     }
+  };
+
+  const closeAuthModal = () => {
+    setState(prev => ({ ...prev, showAuthModal: false }));
+  };
+
+  const handleAuthSuccess = () => {
+    closeAuthModal();
+    processCheckoutAfterAuth();
   };
 
   const createStripeCheckoutSession = async () => {
     try {
-      // Format items for checkout
       const formattedItems = items.map(item => ({
         title: item.product.title,
         quantity: item.quantity,
@@ -150,7 +155,6 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           : null
       }));
       
-      // Prepare checkout data
       const checkoutData = {
         items: formattedItems,
         deliveryMethod: state.deliveryMethod,
@@ -160,7 +164,6 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         customerEmail: user?.email || state.personalDeliveryInfo?.email || null,
       };
       
-      // Create Stripe checkout session
       const { data, error } = await supabase.functions.invoke('create-checkout-session', {
         body: checkoutData
       });
@@ -172,7 +175,6 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       
       console.log("Checkout session created:", data);
       
-      // Redirect to Stripe checkout page
       if (data.url) {
         window.location.href = data.url;
       } else {
@@ -184,26 +186,21 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   };
 
-  const processCheckout = async () => {
+  const processCheckoutAfterAuth = async () => {
     setState((prev) => ({ ...prev, isProcessing: true }));
     
     try {
-      // Simulate processing delay
       await new Promise((resolve) => setTimeout(resolve, 1000));
       
-      // If Stripe payment, create Stripe checkout session and redirect
       if (state.paymentMethod === "stripe") {
         await createStripeCheckoutSession();
-        return; // We don't clear the cart or reset checkout here as the user will be redirected
+        return;
       }
       
-      // If personal delivery with COD, send order notification
       if (state.deliveryMethod === "personal" && state.paymentMethod === "cod") {
         await sendOrderNotification();
       }
       
-      // In a real app, you would process the order here for COD
-      // For now, just show a success message and clear the cart
       toast({
         title: "Order placed successfully!",
         description: "Thank you for your purchase. Your order has been placed.",
@@ -224,6 +221,15 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   };
 
+  const processCheckout = async () => {
+    if (state.paymentMethod === "stripe" && !user) {
+      setState(prev => ({ ...prev, showAuthModal: true }));
+      return;
+    }
+    
+    processCheckoutAfterAuth();
+  };
+
   const resetCheckout = () => {
     setState(initialState);
   };
@@ -238,6 +244,8 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         setPersonalDeliveryInfo,
         processCheckout,
         resetCheckout,
+        closeAuthModal,
+        handleAuthSuccess,
       }}
     >
       {children}
