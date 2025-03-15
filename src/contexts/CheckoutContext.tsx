@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState } from "react";
 import { useCart } from "./CartContext";
 import { useToast } from "@/hooks/use-toast";
@@ -32,6 +33,7 @@ interface CheckoutState {
   personalDeliveryInfo: PersonalDeliveryInfo | null;
   isProcessing: boolean;
   showAuthModal: boolean;
+  isAuthenticating: boolean;
 }
 
 interface CheckoutContextType {
@@ -53,6 +55,7 @@ const initialState: CheckoutState = {
   personalDeliveryInfo: null,
   isProcessing: false,
   showAuthModal: false,
+  isAuthenticating: false,
 };
 
 const CheckoutContext = createContext<CheckoutContextType | undefined>(undefined);
@@ -140,7 +143,13 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   const handleAuthSuccess = () => {
     closeAuthModal();
-    processCheckoutAfterAuth();
+    setState(prev => ({ ...prev, isAuthenticating: true }));
+    
+    // Add a small delay to ensure the user state is fully updated
+    setTimeout(() => {
+      setState(prev => ({ ...prev, isAuthenticating: false }));
+      processCheckoutAfterAuth();
+    }, 1000);
   };
 
   const createStripeCheckoutSession = async () => {
@@ -163,6 +172,8 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         customerId: user?.id || null,
         customerEmail: user?.email || state.personalDeliveryInfo?.email || null,
       };
+      
+      console.log("Creating checkout session with data:", JSON.stringify(checkoutData));
       
       const { data, error } = await supabase.functions.invoke('create-checkout-session', {
         body: checkoutData
@@ -190,7 +201,10 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setState((prev) => ({ ...prev, isProcessing: true }));
     
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      if (state.isAuthenticating) {
+        // Don't proceed if we're still in the authentication process
+        return;
+      }
       
       if (state.paymentMethod === "stripe") {
         await createStripeCheckoutSession();
@@ -213,7 +227,7 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       console.error("Error processing checkout:", error);
       toast({
         title: "Checkout failed",
-        description: "There was an error processing your order. Please try again.",
+        description: error.message || "There was an error processing your order. Please try again.",
         variant: "destructive",
       });
     } finally {

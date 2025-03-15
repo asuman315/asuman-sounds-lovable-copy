@@ -72,8 +72,6 @@ const Checkout = () => {
     setPaymentMethod(method);
     
     if (method === "stripe") {
-      // In a real application, you would redirect to Stripe here
-      // For now, just simulate a payment process
       setStep("summary");
     } else {
       setStep("summary");
@@ -81,7 +79,6 @@ const Checkout = () => {
   };
 
   const onAddressSubmit = (data: AddressForm) => {
-    // Now we're passing a complete address object that matches the required type
     setAddress({
       street: data.street,
       city: data.city,
@@ -491,7 +488,6 @@ const Checkout = () => {
         
         <CardContent className="p-0">
           <div className="grid md:grid-cols-5 divide-y md:divide-y-0 md:divide-x divide-gray-100 dark:divide-gray-800">
-            {/* Order details section - 3/5 width on desktop */}
             <div className="p-6 md:col-span-3 space-y-6">
               <div>
                 <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-3">
@@ -611,7 +607,6 @@ const Checkout = () => {
               )}
             </div>
             
-            {/* Order items and price section - 2/5 width on desktop */}
             <div className="p-6 md:col-span-2 bg-gray-50/50 dark:bg-gray-900/30">
               <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-4">
                 Order Items
@@ -664,21 +659,22 @@ const Checkout = () => {
             variant="outline" 
             onClick={() => setStep("options")}
             className="rounded-full px-4 border-gray-200 hover:bg-gray-50"
+            disabled={state.isProcessing || state.isAuthenticating}
           >
             Change Options
           </Button>
           <Button 
             className="rounded-full px-6 bg-gradient-to-r from-primary to-blue-600 hover:shadow-md transition-all duration-300"
             onClick={handleCheckout}
-            disabled={state.isProcessing}
+            disabled={state.isProcessing || state.isAuthenticating}
           >
-            {state.isProcessing ? (
+            {state.isProcessing || state.isAuthenticating ? (
               <>
                 <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                Processing...
+                {state.isAuthenticating ? "Authenticating..." : "Processing..."}
               </>
             ) : (
               <>
