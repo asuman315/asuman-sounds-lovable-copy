@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
-import { Menu, X, User, LogOut, LogIn, UserPlus, PlusCircle } from "lucide-react";
+import { Menu, X, User, LogOut, LogIn, UserPlus, PlusCircle, ShoppingCart } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -54,16 +54,23 @@ const Header = () => {
     }
   };
 
+  const handleNavigate = (path: string) => {
+    navigate(path);
+    setIsMobileMenuOpen(false);
+    document.body.style.overflow = "";
+  };
+
   const handleSignOut = async () => {
     await signOut();
     navigate("/");
   };
 
   const navItems = [
-    { name: "Home", href: "hero" },
-    { name: "Features", href: "features" },
-    { name: "Team", href: "team" },
-    { name: "Contact", href: "contact" },
+    { name: "Home", href: "/", isLink: true },
+    { name: "Products", href: "/products", isLink: true },
+    { name: "Features", href: "features", isLink: false },
+    { name: "Team", href: "team", isLink: false },
+    { name: "Contact", href: "contact", isLink: false },
   ];
 
   // Log authentication components being rendered
@@ -81,22 +88,33 @@ const Header = () => {
     >
       <div className="container max-w-7xl mx-auto flex items-center justify-between">
         <div className="flex items-center">
-          <a href="#hero" className="flex items-center space-x-2">
+          <Link to="/" className="flex items-center space-x-2">
             <span className="text-gradient font-bold text-xl">Asuman Sounds</span>
-          </a>
+          </Link>
         </div>
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex space-x-8">
           {navItems.map((item) => (
-            <button
-              key={item.name}
-              onClick={() => scrollTo(item.href)}
-              className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors relative group"
-            >
-              {item.name}
-              <span className="absolute bottom-[-4px] left-0 w-0 h-[2px] bg-primary transition-all duration-300 group-hover:w-full"></span>
-            </button>
+            item.isLink ? (
+              <Link
+                key={item.name}
+                to={item.href}
+                className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors relative group"
+              >
+                {item.name}
+                <span className="absolute bottom-[-4px] left-0 w-0 h-[2px] bg-primary transition-all duration-300 group-hover:w-full"></span>
+              </Link>
+            ) : (
+              <button
+                key={item.name}
+                onClick={() => scrollTo(item.href)}
+                className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors relative group"
+              >
+                {item.name}
+                <span className="absolute bottom-[-4px] left-0 w-0 h-[2px] bg-primary transition-all duration-300 group-hover:w-full"></span>
+              </button>
+            )
           ))}
         </nav>
 
@@ -148,7 +166,12 @@ const Header = () => {
               </Button>
             </>
           )}
-          <Button className="hidden md:flex items-center">Shop Now</Button>
+          <Button className="hidden md:flex items-center" asChild>
+            <Link to="/products">
+              <ShoppingCart className="h-4 w-4 mr-2" />
+              Shop Now
+            </Link>
+          </Button>
         </div>
 
         {/* Mobile Navigation Toggle */}
@@ -174,13 +197,23 @@ const Header = () => {
       >
         <div className="h-full flex flex-col pt-24 px-6 space-y-8">
           {navItems.map((item) => (
-            <button
-              key={item.name}
-              onClick={() => scrollTo(item.href)}
-              className="text-xl font-medium py-2 border-b border-gray-100"
-            >
-              {item.name}
-            </button>
+            item.isLink ? (
+              <button
+                key={item.name}
+                onClick={() => handleNavigate(item.href)}
+                className="text-xl font-medium py-2 border-b border-gray-100"
+              >
+                {item.name}
+              </button>
+            ) : (
+              <button
+                key={item.name}
+                onClick={() => scrollTo(item.href)}
+                className="text-xl font-medium py-2 border-b border-gray-100"
+              >
+                {item.name}
+              </button>
+            )
           ))}
           
           {user ? (
@@ -233,7 +266,13 @@ const Header = () => {
             </>
           )}
           
-          <button className="btn-primary mt-auto mb-8">Shop Now</button>
+          <button 
+            className="btn-primary mt-auto mb-8"
+            onClick={() => handleNavigate("/products")}
+          >
+            <ShoppingCart className="mr-2 h-5 w-5 inline-block" />
+            Shop Now
+          </button>
         </div>
       </div>
     </header>
