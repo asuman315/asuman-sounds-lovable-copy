@@ -1,9 +1,11 @@
 
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ShoppingCart } from "lucide-react";
+import { ShoppingCart, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Product } from "@/types/product";
+import { useCart } from "@/contexts/CartContext";
 
 interface FeaturedProductProps {
   product: Product;
@@ -11,6 +13,21 @@ interface FeaturedProductProps {
 }
 
 const FeaturedProduct = ({ product, index }: FeaturedProductProps) => {
+  const { addToCart } = useCart();
+  const [isAdding, setIsAdding] = useState(false);
+  
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    setIsAdding(true);
+    addToCart(product);
+    
+    setTimeout(() => {
+      setIsAdding(false);
+    }, 1500);
+  };
+  
   const calculateDiscountedPrice = () => {
     // We always use the current price
     return product.price;
@@ -83,10 +100,29 @@ const FeaturedProduct = ({ product, index }: FeaturedProductProps) => {
         
         <div className="flex gap-3">
           <Button 
-            className="flex-1 bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-700 transition-colors"
+            className={`flex-1 relative overflow-hidden transition-all duration-300 ${
+              isAdding ? 
+                "bg-green-600 hover:bg-green-700" : 
+                "bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-700"
+            }`}
+            onClick={handleAddToCart}
           >
-            <ShoppingCart className="mr-2 h-4 w-4" />
-            Add to Cart
+            <motion.span
+              initial={{ opacity: 1, y: 0 }}
+              animate={{ opacity: isAdding ? 0 : 1, y: isAdding ? -20 : 0 }}
+              className="flex items-center absolute inset-0 justify-center"
+            >
+              <ShoppingCart className="mr-2 h-4 w-4" />
+              Add to Cart
+            </motion.span>
+            <motion.span
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: isAdding ? 1 : 0, y: isAdding ? 0 : 20 }}
+              className="flex items-center absolute inset-0 justify-center"
+            >
+              <Check className="mr-2 h-4 w-4" />
+              Added
+            </motion.span>
           </Button>
           <Button 
             variant="outline" 

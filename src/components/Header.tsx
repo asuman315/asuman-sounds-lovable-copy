@@ -1,9 +1,10 @@
 
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
-import { Menu, X, User, LogOut, LogIn, UserPlus, PlusCircle, ShoppingBag } from "lucide-react";
+import { Menu, X, User, LogOut, LogIn, UserPlus, PlusCircle, ShoppingBag, ShoppingCart } from "lucide-react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { useCart } from "@/contexts/CartContext";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -11,11 +12,14 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import CartDropdown from "@/components/CartDropdown";
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isCartOpen, setIsCartOpen] = useState(false);
   const { user, signOut } = useAuth();
+  const { totalItems } = useCart();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -41,12 +45,17 @@ const Header = () => {
   useEffect(() => {
     // Close mobile menu when route changes
     setIsMobileMenuOpen(false);
+    setIsCartOpen(false);
     document.body.style.overflow = "";
   }, [location.pathname]);
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
     document.body.style.overflow = isMobileMenuOpen ? "" : "hidden";
+  };
+
+  const toggleCart = () => {
+    setIsCartOpen(!isCartOpen);
   };
 
   const scrollTo = (id: string) => {
@@ -222,6 +231,24 @@ const Header = () => {
               </Button>
             </>
           )}
+          
+          {/* Cart button */}
+          <button 
+            className={cn(
+              "relative p-2 rounded-full transition-all duration-300 hover:bg-gray-100/10",
+              isScrolled ? "text-foreground" : "text-white"
+            )}
+            onClick={toggleCart}
+            aria-label="Open cart"
+          >
+            <ShoppingCart size={20} />
+            {totalItems > 0 && (
+              <span className="absolute -top-1 -right-1 bg-primary text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-medium shadow-md transition-all duration-300 animate-scale-in">
+                {totalItems > 99 ? "99+" : totalItems}
+              </span>
+            )}
+          </button>
+          
           <Button 
             className={cn(
               "hidden md:flex items-center transition-all duration-300",
@@ -238,21 +265,41 @@ const Header = () => {
           </Button>
         </div>
 
-        {/* Mobile Navigation Toggle */}
-        <button
-          className={cn(
-            "md:hidden p-1",
-            isScrolled ? "text-foreground" : "text-white"
-          )}
-          onClick={toggleMobileMenu}
-          aria-label="Toggle menu"
-        >
-          {isMobileMenuOpen ? (
-            <X size={24} className="transition-transform duration-300" />
-          ) : (
-            <Menu size={24} className="transition-transform duration-300" />
-          )}
-        </button>
+        {/* Mobile Navigation Toggle & Cart Icon */}
+        <div className="flex items-center gap-4 md:hidden">
+          {/* Mobile Cart Button */}
+          <button 
+            className={cn(
+              "relative p-1 transition-all duration-300",
+              isScrolled ? "text-foreground" : "text-white"
+            )}
+            onClick={toggleCart}
+            aria-label="Open cart"
+          >
+            <ShoppingCart size={22} />
+            {totalItems > 0 && (
+              <span className="absolute -top-1 -right-1 bg-primary text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-medium shadow-md">
+                {totalItems > 99 ? "99+" : totalItems}
+              </span>
+            )}
+          </button>
+          
+          {/* Mobile Menu Toggle */}
+          <button
+            className={cn(
+              "p-1",
+              isScrolled ? "text-foreground" : "text-white"
+            )}
+            onClick={toggleMobileMenu}
+            aria-label="Toggle menu"
+          >
+            {isMobileMenuOpen ? (
+              <X size={24} className="transition-transform duration-300" />
+            ) : (
+              <Menu size={24} className="transition-transform duration-300" />
+            )}
+          </button>
+        </div>
       </div>
 
       {/* Mobile Navigation */}
@@ -350,6 +397,9 @@ const Header = () => {
           </Link>
         </div>
       </div>
+      
+      {/* Cart Dropdown */}
+      <CartDropdown isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
     </header>
   );
 };

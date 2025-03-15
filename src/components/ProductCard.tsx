@@ -2,22 +2,37 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Heart, ShoppingCart } from "lucide-react";
+import { Heart, ShoppingCart, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Product } from "@/types/product";
+import { useCart } from "@/contexts/CartContext";
 
 interface ProductCardProps {
   product: Product;
 }
 
 const ProductCard = ({ product }: ProductCardProps) => {
+  const { addToCart } = useCart();
   const [isLiked, setIsLiked] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isAdding, setIsAdding] = useState(false);
   
   const toggleLike = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     setIsLiked(!isLiked);
+  };
+  
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    setIsAdding(true);
+    addToCart(product);
+    
+    setTimeout(() => {
+      setIsAdding(false);
+    }, 1500);
   };
   
   const calculateDiscountedPrice = () => {
@@ -137,11 +152,30 @@ const ProductCard = ({ product }: ProductCardProps) => {
           {/* Action buttons */}
           <div className="flex gap-2">
             <Button
-              className="flex-1 text-sm px-3 py-1 h-9 bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-700 transition-colors"
+              className={`flex-1 text-sm px-3 py-1 h-9 relative overflow-hidden transition-all duration-300 ${
+                isAdding ? 
+                  "bg-green-600 hover:bg-green-700" : 
+                  "bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-700"
+              }`}
               disabled={product.stock_count <= 0}
+              onClick={handleAddToCart}
             >
-              <ShoppingCart className="h-4 w-4 mr-1" />
-              Add to Cart
+              <motion.span
+                initial={{ opacity: 1, y: 0 }}
+                animate={{ opacity: isAdding ? 0 : 1, y: isAdding ? -20 : 0 }}
+                className="flex items-center absolute inset-0 justify-center"
+              >
+                <ShoppingCart className="h-4 w-4 mr-1" />
+                Add to Cart
+              </motion.span>
+              <motion.span
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: isAdding ? 1 : 0, y: isAdding ? 0 : 20 }}
+                className="flex items-center absolute inset-0 justify-center"
+              >
+                <Check className="h-4 w-4 mr-1" />
+                Added
+              </motion.span>
             </Button>
             <Button 
               variant="outline" 
