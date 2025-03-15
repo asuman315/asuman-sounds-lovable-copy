@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, ShoppingBag, Plus, Minus, Trash2 } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 interface CartDropdownProps {
   isOpen: boolean;
@@ -13,8 +13,14 @@ interface CartDropdownProps {
 
 const CartDropdown = ({ isOpen, onClose }: CartDropdownProps) => {
   const { items, totalItems, totalPrice, updateQuantity, removeFromCart } = useCart();
+  const navigate = useNavigate();
 
   if (!isOpen) return null;
+
+  const handleCheckout = () => {
+    onClose();
+    navigate("/checkout");
+  };
 
   return (
     <AnimatePresence>
@@ -141,7 +147,10 @@ const CartDropdown = ({ isOpen, onClose }: CartDropdownProps) => {
                     </span>
                   </div>
                   <div className="flex gap-2">
-                    <Button className="w-full bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-700 transition-colors">
+                    <Button 
+                      className="w-full bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-700 transition-colors"
+                      onClick={handleCheckout}
+                    >
                       Checkout
                     </Button>
                   </div>
