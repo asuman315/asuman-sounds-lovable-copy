@@ -5,8 +5,9 @@ This Edge Function sends order notifications via email when a customer completes
 
 ## Features
 - Sends detailed order information including customer details and items ordered
-- Formats the message in a readable HTML email
-- Sends email to a specified recipient
+- Formats the message in a beautiful, responsive HTML email
+- Sends email to the store administrator at asumanssendegeya@gmail.com
+- Includes customer contact information for follow-up
 - Logs all information for debugging purposes
 
 ## Payload Structure
@@ -17,6 +18,7 @@ This Edge Function sends order notifications via email when a customer completes
   "district": "delivery district",
   "cityOrTown": "city or town",
   "preferredTime": "preferred delivery time",
+  "email": "customer email (optional)",
   "items": "formatted list of items",
   "totalAmount": "total order amount"
 }
@@ -33,7 +35,9 @@ This function requires a Resend API key to be set as a secret in the Supabase pr
 4. Deploy the edge function
 
 ## Future Improvements
-- Add email templates with better styling
+- Add more customizable email templates
 - Send confirmation emails to customers as well
+- Add support for multiple admin recipients
 - Add authentication to secure the endpoint
+- Integrate with order tracking system
 - Add more detailed logging and error handling

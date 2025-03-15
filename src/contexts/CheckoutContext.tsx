@@ -89,17 +89,20 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           `${item.product.title} (${item.quantity}) - $${(item.product.price * item.quantity).toFixed(2)}`
         ).join('\n');
         
+        // Get preferred time as user-friendly string
         const preferredTimeString = 
           state.personalDeliveryInfo.preferredTime === "morning" ? "Morning (8AM - 12PM)" :
           state.personalDeliveryInfo.preferredTime === "afternoon" ? "Afternoon (12PM - 5PM)" :
           state.personalDeliveryInfo.preferredTime === "evening" ? "Evening (5PM - 9PM)" : "Any Time";
         
+        // Prepare order details for the email
         const messageDetails = {
           customer: state.personalDeliveryInfo.fullName,
           phoneNumber: state.personalDeliveryInfo.phoneNumber,
           district: state.personalDeliveryInfo.district,
           cityOrTown: state.personalDeliveryInfo.cityOrTown || "Not specified",
           preferredTime: preferredTimeString,
+          email: state.personalDeliveryInfo.email || "",
           items: orderItems,
           totalAmount: `$${totalPrice.toFixed(2)}`,
         };
