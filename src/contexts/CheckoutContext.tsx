@@ -2,6 +2,7 @@
 import React, { createContext, useContext, useState } from "react";
 import { useCart } from "./CartContext";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 type DeliveryMethod = "personal" | "shipping";
 type PaymentMethod = "stripe" | "cod";
@@ -54,7 +55,7 @@ const CheckoutContext = createContext<CheckoutContextType | undefined>(undefined
 
 export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [state, setState] = useState<CheckoutState>(initialState);
-  const { clearCart } = useCart();
+  const { clearCart, items, totalPrice } = useCart();
   const { toast } = useToast();
 
   const setDeliveryMethod = (method: DeliveryMethod) => {
@@ -80,24 +81,75 @@ export const CheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setState((prev) => ({ ...prev, personalDeliveryInfo }));
   };
 
+  const sendOrderDetailsToPhone = async () => {
+    try {
+      if (state.deliveryMethod === "personal" && state.personalDeliveryInfo) {
+        // Format order details
+        const orderItems = items.map(item => 
+          `${item.product.title} (${item.quantity}) - $${(item.product.price * item.quantity).toFixed(2)}`
+        ).join('\n');
+        
+        const preferredTimeString = 
+          state.personalDeliveryInfo.preferredTime === "morning" ? "Morning (8AM - 12PM)" :
+          state.personalDeliveryInfo.preferredTime === "afternoon" ? "Afternoon (12PM - 5PM)" :
+          state.personalDeliveryInfo.preferredTime === "evening" ? "Evening (5PM - 9PM)" : "Any Time";
+        
+        const messageDetails = {
+          to: "0785598694", // The specified phone number
+          customer: state.personalDeliveryInfo.fullName,
+          phoneNumber: state.personalDeliveryInfo.phoneNumber,
+          district: state.personalDeliveryInfo.district,
+          cityOrTown: state.personalDeliveryInfo.cityOrTown || "Not specified",
+          preferredTime: preferredTimeString,
+          items: orderItems,
+          totalAmount: `$${totalPrice.toFixed(2)}`,
+        };
+        
+        // Send the order details via Supabase edge function
+        await supabase.functions.invoke('send-order-notification', {
+          body: messageDetails
+        });
+        
+        console.log("Order notification sent successfully");
+      }
+    } catch (error) {
+      console.error("Error sending order notification:", error);
+      // Don't throw here - we want the checkout to complete even if notification fails
+    }
+  };
+
   const processCheckout = async () => {
     setState((prev) => ({ ...prev, isProcessing: true }));
     
-    // Simulate processing delay
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    
-    // In a real app, you would process the payment and order here
-    // For now, just show a success message and clear the cart
-    toast({
-      title: "Order placed successfully!",
-      description: "Thank you for your purchase. Your order has been placed.",
-      variant: "default",
-    });
-    
-    clearCart();
-    resetCheckout();
-    
-    setState((prev) => ({ ...prev, isProcessing: false }));
+    try {
+      // Simulate processing delay
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      
+      // If personal delivery, send notification to specified phone
+      if (state.deliveryMethod === "personal") {
+        await sendOrderDetailsToPhone();
+      }
+      
+      // In a real app, you would process the payment and order here
+      // For now, just show a success message and clear the cart
+      toast({
+        title: "Order placed successfully!",
+        description: "Thank you for your purchase. Your order has been placed.",
+        variant: "default",
+      });
+      
+      clearCart();
+      resetCheckout();
+    } catch (error) {
+      console.error("Error processing checkout:", error);
+      toast({
+        title: "Checkout failed",
+        description: "There was an error processing your order. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setState((prev) => ({ ...prev, isProcessing: false }));
+    }
   };
 
   const resetCheckout = () => {
