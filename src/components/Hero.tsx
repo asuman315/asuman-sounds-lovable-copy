@@ -4,6 +4,17 @@ import { ChevronDown } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 
+// Product categories - same as in Admin.tsx
+const productCategories = [
+  { value: "audio", label: "Audio" },
+  { value: "video", label: "Video" },
+  { value: "software", label: "Software" },
+  { value: "preset", label: "Preset" },
+  { value: "sample", label: "Sample Pack" },
+  { value: "instrument", label: "Virtual Instrument" },
+  { value: "other", label: "Other" }
+];
+
 const Hero = () => {
   const { user } = useAuth();
   
@@ -85,7 +96,12 @@ const Hero = () => {
               </div>
             </div>
             <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 glass-card py-3 px-6 text-foreground/90 font-medium">
-              Premium Headphones • Speakers • Earbuds
+              {productCategories.map((category, index) => (
+                <span key={category.value} className="inline-block">
+                  {category.label}
+                  {index < productCategories.length - 1 && <span className="mx-2">•</span>}
+                </span>
+              ))}
             </div>
           </div>
         </AnimatedElement>

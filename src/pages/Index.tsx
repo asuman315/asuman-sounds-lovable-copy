@@ -7,6 +7,9 @@ import Team from "@/components/Team";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 
+// This file just needs to include the animations and structure for the page
+// The product categories are already defined in the Hero component
+
 const Index = () => {
   const pageRef = useRef<HTMLDivElement>(null);
 
