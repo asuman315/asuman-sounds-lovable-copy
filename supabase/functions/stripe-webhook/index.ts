@@ -1,7 +1,7 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@13.10.0?target=deno";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.9";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.0?target=deno";
 
 const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") as string, {
   apiVersion: "2023-10-16",
@@ -15,7 +15,18 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 // This is your Stripe webhook endpoint secret
 const endpointSecret = Deno.env.get("STRIPE_WEBHOOK_SECRET") || "";
 
+// Define CORS headers
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
+
 serve(async (req) => {
+  // Handle CORS preflight requests
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { headers: corsHeaders });
+  }
+  
   const signature = req.headers.get("stripe-signature");
   
   if (!signature) {
@@ -97,10 +108,13 @@ serve(async (req) => {
     }
 
     return new Response(JSON.stringify({ received: true }), {
-      headers: { "Content-Type": "application/json" },
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (error) {
     console.error("Error handling webhook:", error);
-    return new Response(`Webhook error: ${error.message}`, { status: 500 });
+    return new Response(`Webhook error: ${error.message}`, { 
+      status: 500,
+      headers: corsHeaders 
+    });
   }
 });
