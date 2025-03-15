@@ -1,4 +1,3 @@
-
 import AnimatedElement from "./AnimatedElement";
 import { ChevronDown } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -10,14 +9,7 @@ const productCategories = [
   { value: "speakers", label: "Speakers" },
   { value: "earbuds", label: "Earbuds" },
   { value: "accessories", label: "Accessories" },
-  { value: "new-releases", label: "New Releases" },
-  { value: "audio", label: "Audio" },
-  { value: "video", label: "Video" },
-  { value: "software", label: "Software" },
-  { value: "preset", label: "Preset" },
-  { value: "sample", label: "Sample Pack" },
-  { value: "instrument", label: "Virtual Instrument" },
-  { value: "other", label: "Other" }
+  { value: "new-releases", label: "New Releases" }
 ];
 
 const Hero = () => {

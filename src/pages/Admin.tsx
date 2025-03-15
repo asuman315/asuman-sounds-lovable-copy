@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -55,14 +54,7 @@ const productCategories = [
   { value: "speakers", label: "Speakers" },
   { value: "earbuds", label: "Earbuds" },
   { value: "accessories", label: "Accessories" },
-  { value: "new-releases", label: "New Releases" },
-  { value: "audio", label: "Audio" },
-  { value: "video", label: "Video" },
-  { value: "software", label: "Software" },
-  { value: "preset", label: "Preset" },
-  { value: "sample", label: "Sample Pack" },
-  { value: "instrument", label: "Virtual Instrument" },
-  { value: "other", label: "Other" }
+  { value: "new-releases", label: "New Releases" }
 ];
 
 // Form validation schema
@@ -75,7 +67,7 @@ const audioProductSchema = z.object({
     message: "Price must be a positive number",
   }),
   currency: z.string().default("USD"),
-  category: z.string().default("audio"),
+  category: z.string().default("headphones"),
   originalPrice: z.string().optional().refine((val) => !val || !isNaN(Number(val)) && Number(val) >= 0, {
     message: "Original price must be a non-negative number",
   }),
@@ -111,7 +103,7 @@ const AdminPage = () => {
       description: "",
       price: "",
       currency: "USD",
-      category: "audio",
+      category: "headphones",
       originalPrice: "",
       comparablePrice: "",
       stockCount: "0",
