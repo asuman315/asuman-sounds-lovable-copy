@@ -12,22 +12,29 @@ interface FeaturedProductProps {
 
 const FeaturedProduct = ({ product, index }: FeaturedProductProps) => {
   const calculateDiscountedPrice = () => {
-    if (product.discount) {
-      return product.price - (product.price * product.discount);
+    if (product.original_price && product.original_price > product.price) {
+      return product.price;
     }
     return product.price;
   };
   
   const formattedPrice = new Intl.NumberFormat('en-US', {
     style: 'currency',
-    currency: 'USD',
+    currency: product.currency || 'USD',
   }).format(calculateDiscountedPrice());
   
-  const originalPrice = new Intl.NumberFormat('en-US', {
+  const originalPrice = product.original_price ? new Intl.NumberFormat('en-US', {
     style: 'currency',
-    currency: 'USD',
-  }).format(product.price);
+    currency: product.currency || 'USD',
+  }).format(product.original_price) : null;
   
+  const discountPercentage = product.original_price ? 
+    Math.round(((product.original_price - product.price) / product.original_price) * 100) : null;
+  
+  const mainImage = product.images && product.images.length > 0 ? 
+    product.images.find(img => img.is_main)?.image_url || product.images[0].image_url : 
+    'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3';
+
   return (
     <motion.div
       className="glass-card overflow-hidden backdrop-blur-md"
@@ -38,8 +45,8 @@ const FeaturedProduct = ({ product, index }: FeaturedProductProps) => {
     >
       <div className="relative aspect-square overflow-hidden">
         <img 
-          src={product.images[0]} 
-          alt={product.name} 
+          src={mainImage} 
+          alt={product.title} 
           className="w-full h-full object-cover transition-transform duration-700 hover:scale-105" 
           loading="lazy"
         />
@@ -49,17 +56,17 @@ const FeaturedProduct = ({ product, index }: FeaturedProductProps) => {
       </div>
       
       <div className="p-6">
-        <h3 className="text-xl font-bold mb-2">{product.name}</h3>
+        <h3 className="text-xl font-bold mb-2">{product.title}</h3>
         <p className="text-gray-600 mb-4 line-clamp-2">{product.description}</p>
         
         <div className="flex items-baseline mb-6">
           <span className="text-2xl font-bold">{formattedPrice}</span>
-          {product.discount && (
+          {originalPrice && (
             <span className="ml-2 text-gray-500 line-through">{originalPrice}</span>
           )}
-          {product.discount && (
+          {discountPercentage && discountPercentage > 0 && (
             <span className="ml-2 text-sm font-medium text-red-500">
-              Save {Math.round(product.discount * 100)}%
+              Save {discountPercentage}%
             </span>
           )}
         </div>
