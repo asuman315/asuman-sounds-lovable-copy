@@ -151,11 +151,13 @@ const Header = () => {
           {user ? (
             <>
               <Button 
-                variant={isScrolled ? "ghost" : "outline"} 
+                variant="outline" 
                 size="sm" 
                 className={cn(
                   "flex items-center gap-1 transition-all duration-300",
-                  isScrolled ? "hover:bg-primary/10" : "text-white border-white/30 hover:bg-white/10"
+                  isScrolled ? 
+                    "hover:bg-primary/10" : 
+                    "text-white border-white/30 hover:bg-white/10 bg-transparent"
                 )}
                 asChild
               >
@@ -167,11 +169,11 @@ const Header = () => {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button 
-                    variant={isScrolled ? "ghost" : "outline"} 
+                    variant="outline" 
                     size="sm" 
                     className={cn(
                       "relative rounded-full",
-                      !isScrolled && "text-white border-white/30 hover:bg-white/10"
+                      !isScrolled && "text-white border-white/30 hover:bg-white/10 bg-transparent"
                     )}
                   >
                     <User size={18} />
@@ -191,11 +193,11 @@ const Header = () => {
               {/* Log when rendering sign-in/sign-up buttons */}
               {console.log("Rendering sign-in/sign-up buttons")}
               <Button 
-                variant={isScrolled ? "ghost" : "outline"} 
+                variant="outline" 
                 size="sm" 
                 className={cn(
                   "flex items-center gap-1",
-                  !isScrolled && "text-white border-white/30 hover:bg-white/10"
+                  !isScrolled && "text-white border-white/30 hover:bg-white/10 bg-transparent"
                 )} 
                 asChild
               >
@@ -209,7 +211,7 @@ const Header = () => {
                 size="sm" 
                 className={cn(
                   "flex items-center gap-1",
-                  !isScrolled && "text-white border-white/30 hover:bg-white/10"
+                  !isScrolled && "text-white border-white/30 hover:bg-white/10 bg-transparent"
                 )} 
                 asChild
               >
@@ -225,7 +227,7 @@ const Header = () => {
               "hidden md:flex items-center transition-all duration-300",
               isScrolled ? 
                 "bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-700" : 
-                "bg-white text-primary hover:bg-white/90"
+                "bg-white/10 text-white hover:bg-white/20 border border-white/30"
             )}
             asChild
           >
