@@ -59,26 +59,6 @@ const Hero = () => {
 
           <AnimatedElement animation="fade-in" delay={700}>
             <div className="flex flex-col sm:flex-row gap-4 mt-4">
-              {user ? (
-                <Link to="/products" className="btn-primary flex items-center justify-center gap-2">
-                  Shop Collection
-                </Link>
-              ) : (
-                <>
-                  <Link to="/signup" className="btn-primary">
-                    Sign Up
-                  </Link>
-                  <Link to="/login" className="btn-secondary">
-                    Sign In
-                  </Link>
-                </>
-              )}
-              <Button
-                variant="outline"
-                className="btn-secondary"
-              >
-                Learn More
-              </Button>
               <Link to="/products" className="btn-primary flex items-center justify-center gap-2">
                 Shop Now
               </Link>

@@ -290,7 +290,7 @@ const Header = () => {
 
       <div
         className={cn(
-          "fixed inset-0 bg-gradient-to-b from-primary/90 to-primary/80 z-40 transition-transform duration-300 md:hidden text-white",
+          "fixed inset-0 bg-primary/95 backdrop-blur-md z-40 transition-transform duration-300 md:hidden text-white",
           isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
         )}
       >
