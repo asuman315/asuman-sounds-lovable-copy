@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Menu, X, User, LogOut, LogIn, UserPlus, PlusCircle, ShoppingBag, ShoppingCart } from "lucide-react";
@@ -287,30 +288,20 @@ const Header = () => {
         </div>
       </div>
 
+      {/* Mobile Menu - Updated with better visibility */}
       <div
         className={cn(
-          "fixed inset-0 bg-blue-600 z-40 transition-transform duration-300 md:hidden",
+          "fixed inset-0 bg-primary/95 backdrop-blur-lg z-40 transition-transform duration-300 md:hidden",
           isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
         )}
       >
-        <div className="h-full flex flex-col pt-24 px-6 space-y-6 relative">
-          <button
-            onClick={() => {
-              setIsMobileMenuOpen(false);
-              document.body.style.overflow = "";
-            }}
-            className="absolute top-6 right-6 p-2 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
-            aria-label="Close menu"
-          >
-            <X size={24} />
-          </button>
-          
+        <div className="h-full flex flex-col pt-24 px-6 space-y-8 bg-gradient-to-b from-primary/90 to-primary/80">
           {navItems.map((item) => (
             item.isPage ? (
               <Link
                 key={item.name}
                 to={item.href}
-                className="text-xl font-medium py-3 border-b border-white/20 text-white flex items-center"
+                className="text-xl font-medium py-2 border-b border-white/20 text-white"
                 onClick={() => {
                   setIsMobileMenuOpen(false);
                   document.body.style.overflow = "";
@@ -325,7 +316,7 @@ const Header = () => {
                   setIsMobileMenuOpen(false);
                   document.body.style.overflow = "";
                 }}
-                className="text-xl font-medium py-3 border-b border-white/20 text-white flex items-center"
+                className="text-xl font-medium py-2 border-b border-white/20 text-white"
               >
                 {item.name}
               </button>
@@ -336,20 +327,20 @@ const Header = () => {
             <>
               <Link
                 to="/admin"
-                className="text-xl font-medium py-3 border-b border-white/20 flex items-center text-white"
+                className="text-xl font-medium py-2 border-b border-white/20 flex items-center text-white"
                 onClick={() => {
                   setIsMobileMenuOpen(false);
                   document.body.style.overflow = "";
                 }}
               >
-                <PlusCircle className="mr-3 h-5 w-5" />
+                <PlusCircle className="mr-2 h-5 w-5" />
                 Add Product
               </Link>
               <button
                 onClick={handleSignOut}
-                className="text-xl font-medium py-3 border-b border-white/20 flex items-center text-white"
+                className="text-xl font-medium py-2 border-b border-white/20 flex items-center text-white"
               >
-                <LogOut className="mr-3 h-5 w-5" />
+                <LogOut className="mr-2 h-5 w-5" />
                 Sign Out
               </button>
             </>
@@ -357,24 +348,24 @@ const Header = () => {
             <>
               <Link
                 to="/login"
-                className="text-xl font-medium py-3 border-b border-white/20 flex items-center text-white"
+                className="text-xl font-medium py-2 border-b border-white/20 flex items-center text-white"
                 onClick={() => {
                   setIsMobileMenuOpen(false);
                   document.body.style.overflow = "";
                 }}
               >
-                <LogIn className="mr-3 h-5 w-5" />
+                <LogIn className="mr-2 h-5 w-5" />
                 Sign In
               </Link>
               <Link
                 to="/signup"
-                className="text-xl font-medium py-3 border-b border-white/20 flex items-center text-white"
+                className="text-xl font-medium py-2 border-b border-white/20 flex items-center text-white"
                 onClick={() => {
                   setIsMobileMenuOpen(false);
                   document.body.style.overflow = "";
                 }}
               >
-                <UserPlus className="mr-3 h-5 w-5" />
+                <UserPlus className="mr-2 h-5 w-5" />
                 Sign Up
               </Link>
             </>
@@ -382,7 +373,7 @@ const Header = () => {
           
           <Link
             to="/products"
-            className="bg-white text-blue-600 py-4 px-6 rounded-full mt-auto mb-8 flex items-center justify-center gap-2 font-medium shadow-md"
+            className="bg-white text-primary py-3 px-6 rounded-full mt-auto mb-8 flex items-center justify-center gap-2 hover:bg-white/90 transition-colors font-medium"
             onClick={() => {
               setIsMobileMenuOpen(false);
               document.body.style.overflow = "";
