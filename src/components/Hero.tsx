@@ -37,16 +37,28 @@ const Hero = () => {
       </div>
 
       <div className="container max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
-        <div className="flex flex-col items-center text-center max-w-4xl mx-auto">
+        <div className="flex flex-col items-center text-center max-w-4xl mx-auto relative">
           <AnimatedElement animation="fade-in" delay={100}>
             <span className="inline-block px-4 py-1.5 rounded-full bg-primary/10 text-primary font-medium text-sm mb-6">
               Premium Audio Experience
             </span>
           </AnimatedElement>
 
-          <AnimatedElement animation="fade-in" delay={300}>
+          <AnimatedElement animation="fade-in" delay={300} className="relative">
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight md:leading-tight mb-6 text-balance">
-              Experience <span className="text-gradient">Sound</span> Like Never Before
+              Experience <span className="text-gradient relative">
+                Sound
+                <AnimatedElement 
+                  animation="float" 
+                  className="absolute -right-24 top-1/2 -translate-y-1/2 -z-10 opacity-80 hidden md:block"
+                >
+                  <img 
+                    src="/lovable-uploads/0c8ad1fb-ccf6-4eb9-a5b2-b50e2cf65dbb.png" 
+                    alt="Premium headphones" 
+                    className="w-40 h-40 object-contain transform rotate-12"
+                  />
+                </AnimatedElement>
+              </span> Like Never Before
             </h1>
           </AnimatedElement>
 
