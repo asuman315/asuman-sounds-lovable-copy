@@ -72,8 +72,8 @@ const Hero = () => {
               <div className="w-full h-full rounded-lg overflow-hidden bg-gradient-to-br from-gray-900 to-gray-800 flex items-center justify-center">
                 <div className="relative">
                   <img 
-                    src="/lovable-uploads/dda80657-f174-4543-a9c9-c0216afa2891.png" 
-                    alt="Premium blue headphones" 
+                    src="/lovable-uploads/0c8ad1fb-ccf6-4eb9-a5b2-b50e2cf65dbb.png" 
+                    alt="Premium headphones" 
                     className="max-w-xs md:max-w-md lg:max-w-lg mx-auto object-contain transform hover:scale-105 transition-transform duration-500"
                   />
                   <div className="absolute -inset-8 bg-primary/10 rounded-full filter blur-xl opacity-30 animate-pulse-slow"></div>
