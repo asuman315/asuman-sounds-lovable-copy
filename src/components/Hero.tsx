@@ -3,6 +3,7 @@ import AnimatedElement from "./AnimatedElement";
 import { ChevronDown } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { Button } from "./ui/button";
 
 // Product categories - same as in Admin.tsx
 const productCategories = [
@@ -59,9 +60,9 @@ const Hero = () => {
           <AnimatedElement animation="fade-in" delay={700}>
             <div className="flex flex-col sm:flex-row gap-4 mt-4">
               {user ? (
-                <button className="btn-primary">
+                <Link to="/products" className="btn-primary flex items-center justify-center gap-2">
                   Shop Collection
-                </button>
+                </Link>
               ) : (
                 <>
                   <Link to="/signup" className="btn-primary">
@@ -72,9 +73,15 @@ const Hero = () => {
                   </Link>
                 </>
               )}
-              <button className="btn-secondary">
+              <Button
+                variant="outline"
+                className="btn-secondary"
+              >
                 Learn More
-              </button>
+              </Button>
+              <Link to="/products" className="btn-primary flex items-center justify-center gap-2">
+                Shop Now
+              </Link>
             </div>
           </AnimatedElement>
         </div>

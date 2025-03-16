@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Menu, X, User, LogOut, LogIn, UserPlus, PlusCircle, ShoppingBag, ShoppingCart } from "lucide-react";
@@ -22,9 +23,6 @@ const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const isProductsPage = location.pathname === "/products";
-
-  console.log("Header rendering, user state:", !!user);
-  console.log("User object:", user);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -56,31 +54,6 @@ const Header = () => {
     setIsCartOpen(!isCartOpen);
   };
 
-  const scrollTo = (id: string) => {
-    if (location.pathname !== "/") {
-      navigate("/");
-      setTimeout(() => {
-        const element = document.getElementById(id);
-        if (element) {
-          window.scrollTo({
-            top: element.offsetTop - 80,
-            behavior: "smooth",
-          });
-        }
-      }, 100);
-    } else {
-      const element = document.getElementById(id);
-      if (element) {
-        window.scrollTo({
-          top: element.offsetTop - 80,
-          behavior: "smooth",
-        });
-      }
-    }
-    setIsMobileMenuOpen(false);
-    document.body.style.overflow = "";
-  };
-
   const handleSignOut = async () => {
     await signOut();
     navigate("/");
@@ -96,39 +69,8 @@ const Header = () => {
     if (item.isPage && item.href) {
       return location.pathname === item.href;
     }
-    
-    if (!item.isPage && location.pathname === "/") {
-      if (item.id === "featured-products" && !isActiveSection("categories") && !isActiveSection("features")) {
-        return isActiveSection(item.id);
-      }
-      if (item.id === "features" && !isActiveSection("categories")) {
-        return isActiveSection(item.id);
-      }
-      if (item.id === "categories") {
-        return isActiveSection(item.id);
-      }
-      return false;
-    }
-    
     return false;
   };
-
-  const isActiveSection = (id: string | null) => {
-    if (!id) return false;
-    
-    const element = document.getElementById(id);
-    if (!element) return false;
-    
-    const rect = element.getBoundingClientRect();
-    const isVisible = 
-      rect.top <= (window.innerHeight / 3) && 
-      rect.bottom >= (window.innerHeight / 3);
-    
-    return isVisible;
-  };
-
-  console.log("Auth components rendering - user status:", user ? "logged in" : "logged out");
-  console.log("Rendering header with links for admin:", user ? "showing add product" : "not showing");
 
   const textColor = (!isScrolled && isProductsPage) ? "text-white" : "text-foreground";
   const textHoverColor = (!isScrolled && isProductsPage) ? "hover:text-white/80" : "hover:text-primary";
@@ -179,10 +121,10 @@ const Header = () => {
             ) : (
               <button
                 key={item.name}
-                onClick={() => scrollTo(item.id || "")}
+                onClick={() => null}
                 className={cn(
                   "text-sm font-medium transition-colors relative group",
-                  location.pathname === "/" && item.id === "featured-products" ? 
+                  isActive(item) ? 
                     "text-primary font-semibold" : 
                     isScrolled ? "text-foreground/80 hover:text-primary" : 
                     `${textColor}/90 ${textHoverColor}`
@@ -191,7 +133,7 @@ const Header = () => {
                 {item.name}
                 <span className={cn(
                   "absolute bottom-[-4px] left-0 h-[2px] transition-all duration-300",
-                  location.pathname === "/" && item.id === "featured-products" ? 
+                  isActive(item) ? 
                     "w-full bg-primary" : 
                     "w-0 group-hover:w-full",
                   isScrolled ? "bg-primary" : "bg-white"
@@ -246,7 +188,6 @@ const Header = () => {
             </>
           ) : (
             <>
-              {console.log("Rendering sign-in/sign-up buttons")}
               <Button 
                 variant="outline" 
                 size="sm" 
@@ -349,7 +290,7 @@ const Header = () => {
 
       <div
         className={cn(
-          "fixed inset-0 bg-white z-40 transition-transform duration-300 md:hidden",
+          "fixed inset-0 bg-gradient-to-b from-primary/90 to-primary/80 z-40 transition-transform duration-300 md:hidden text-white",
           isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
         )}
       >
@@ -359,7 +300,7 @@ const Header = () => {
               <Link
                 key={item.name}
                 to={item.href}
-                className="text-xl font-medium py-2 border-b border-gray-100"
+                className="text-xl font-medium py-2 border-b border-white/20 text-white"
                 onClick={() => {
                   setIsMobileMenuOpen(false);
                   document.body.style.overflow = "";
@@ -370,8 +311,11 @@ const Header = () => {
             ) : (
               <button
                 key={item.name}
-                onClick={() => scrollTo(item.href)}
-                className="text-xl font-medium py-2 border-b border-gray-100"
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  document.body.style.overflow = "";
+                }}
+                className="text-xl font-medium py-2 border-b border-white/20 text-white"
               >
                 {item.name}
               </button>
@@ -382,7 +326,7 @@ const Header = () => {
             <>
               <Link
                 to="/admin"
-                className="text-xl font-medium py-2 border-b border-gray-100 flex items-center"
+                className="text-xl font-medium py-2 border-b border-white/20 flex items-center text-white"
                 onClick={() => {
                   setIsMobileMenuOpen(false);
                   document.body.style.overflow = "";
@@ -393,7 +337,7 @@ const Header = () => {
               </Link>
               <button
                 onClick={handleSignOut}
-                className="text-xl font-medium py-2 border-b border-gray-100 flex items-center"
+                className="text-xl font-medium py-2 border-b border-white/20 flex items-center text-white"
               >
                 <LogOut className="mr-2 h-5 w-5" />
                 Sign Out
@@ -401,10 +345,9 @@ const Header = () => {
             </>
           ) : (
             <>
-              {console.log("Rendering mobile sign-in/sign-up links")}
               <Link
                 to="/login"
-                className="text-xl font-medium py-2 border-b border-gray-100 flex items-center"
+                className="text-xl font-medium py-2 border-b border-white/20 flex items-center text-white"
                 onClick={() => {
                   setIsMobileMenuOpen(false);
                   document.body.style.overflow = "";
@@ -415,7 +358,7 @@ const Header = () => {
               </Link>
               <Link
                 to="/signup"
-                className="text-xl font-medium py-2 border-b border-gray-100 flex items-center"
+                className="text-xl font-medium py-2 border-b border-white/20 flex items-center text-white"
                 onClick={() => {
                   setIsMobileMenuOpen(false);
                   document.body.style.overflow = "";
@@ -429,7 +372,7 @@ const Header = () => {
           
           <Link
             to="/products"
-            className="btn-primary mt-auto mb-8 flex items-center justify-center gap-2"
+            className="bg-white/20 text-white py-3 px-6 rounded-full mt-auto mb-8 flex items-center justify-center gap-2 hover:bg-white/30 transition-colors"
             onClick={() => {
               setIsMobileMenuOpen(false);
               document.body.style.overflow = "";
