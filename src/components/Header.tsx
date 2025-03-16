@@ -90,9 +90,6 @@ const Header = () => {
     { name: "Home", href: "/", id: "hero", isPage: true },
     { name: "Products", href: "/products", id: null, isPage: true },
     { name: "Categories", href: "/categories", id: "categories", isPage: true },
-    { name: "Features", href: null, id: "features", isPage: false },
-    { name: "Featured", href: null, id: "featured-products", isPage: false },
-    { name: "Contact", href: null, id: "contact", isPage: false },
   ];
 
   const isActive = (item: typeof navItems[0]) => {
