@@ -1,5 +1,5 @@
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, forwardRef } from "react";
 import { cn } from "@/lib/utils";
 
 interface AnimatedElementProps {
@@ -9,26 +9,33 @@ interface AnimatedElementProps {
   className?: string;
   threshold?: number;
   once?: boolean;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
 }
 
-const AnimatedElement = ({
+const AnimatedElement = forwardRef<HTMLDivElement, AnimatedElementProps>(({
   children,
   animation,
   delay = 0,
   className,
   threshold = 0.1,
   once = true,
-}: AnimatedElementProps) => {
-  const ref = useRef<HTMLDivElement>(null);
+  onMouseEnter,
+  onMouseLeave,
+}, ref) => {
+  const localRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
+  
+  // Use provided ref or local ref
+  const elementRef = ref || localRef;
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
           setIsVisible(true);
-          if (once && ref.current) {
-            observer.unobserve(ref.current);
+          if (once && elementRef.current) {
+            observer.unobserve(elementRef.current);
           }
         } else if (!once) {
           setIsVisible(false);
@@ -40,7 +47,7 @@ const AnimatedElement = ({
       }
     );
 
-    const currentRef = ref.current;
+    const currentRef = elementRef.current;
     if (currentRef) {
       observer.observe(currentRef);
     }
@@ -50,11 +57,11 @@ const AnimatedElement = ({
         observer.unobserve(currentRef);
       }
     };
-  }, [once, threshold]);
+  }, [once, threshold, elementRef]);
 
   return (
     <div
-      ref={ref}
+      ref={elementRef}
       className={cn(
         isVisible ? `animate-${animation}` : "opacity-0",
         className
@@ -63,10 +70,14 @@ const AnimatedElement = ({
         animationDelay: `${delay}ms`,
         animationFillMode: "forwards",
       }}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
     >
       {children}
     </div>
   );
-};
+});
+
+AnimatedElement.displayName = "AnimatedElement";
 
 export default AnimatedElement;

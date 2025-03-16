@@ -1,4 +1,5 @@
 
+import { useState, useRef, useEffect } from "react";
 import AnimatedElement from "./AnimatedElement";
 import { ChevronDown } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -16,6 +17,9 @@ const productCategories = [
 
 const Hero = () => {
   const { user } = useAuth();
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const headphonesRef = useRef<HTMLDivElement>(null);
+  const [isHovering, setIsHovering] = useState(false);
   
   const scrollToNext = () => {
     const featuresSection = document.getElementById("features");
@@ -24,10 +28,26 @@ const Hero = () => {
     }
   };
 
+  // Handle mouse movement for the floating headphones
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!headphonesRef.current || !isHovering) return;
+    
+    const { left, top, width, height } = headphonesRef.current.getBoundingClientRect();
+    const centerX = left + width / 2;
+    const centerY = top + height / 2;
+    
+    // Calculate relative mouse position from center of element
+    const relativeX = (e.clientX - centerX) / 15;
+    const relativeY = (e.clientY - centerY) / 15;
+    
+    setMousePosition({ x: relativeX, y: relativeY });
+  };
+
   return (
     <section
       id="hero"
       className="min-h-screen-dynamic flex flex-col justify-center items-center relative overflow-hidden bg-gradient-to-br from-white to-secondary/30 pt-24 md:pt-28"
+      onMouseMove={handleMouseMove}
     >
       {/* Decorative elements */}
       <div className="absolute inset-0 overflow-hidden">
@@ -51,11 +71,21 @@ const Hero = () => {
                 <AnimatedElement 
                   animation="float" 
                   className="absolute md:-left-[500px] -z-10 opacity-80 block w-[400px] h-[400px] top-[-20px]"
+                  ref={headphonesRef}
+                  onMouseEnter={() => setIsHovering(true)}
+                  onMouseLeave={() => {
+                    setIsHovering(false);
+                    setMousePosition({ x: 0, y: 0 });
+                  }}
                 >
                   <img 
                     src="/lovable-uploads/0c8ad1fb-ccf6-4eb9-a5b2-b50e2cf65dbb.png" 
                     alt="Premium headphones" 
-                    className=" object-contain transform"
+                    className="object-contain transform"
+                    style={{
+                      transform: `translate(${mousePosition.x}px, ${mousePosition.y}px) ${isHovering ? 'scale(1.05)' : ''}`,
+                      transition: isHovering ? 'transform 0.1s ease-out' : 'transform 0.3s ease-out',
+                    }}
                   />
                 </AnimatedElement>
               </span> Like Never Before
