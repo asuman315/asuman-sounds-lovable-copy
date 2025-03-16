@@ -1,3 +1,4 @@
+
 import { Link } from "react-router-dom";
 import { Headphones, Speaker, Music, Package, Radio } from "lucide-react";
 import AnimatedElement from "./AnimatedElement";
@@ -16,7 +17,9 @@ const categoryIcons: Record<string, React.ElementType> = {
 const categoryImages: Record<string, string> = {
   "headphones": "/lovable-uploads/0c8ad1fb-ccf6-4eb9-a5b2-b50e2cf65dbb.png",
   "speakers": "/lovable-uploads/bed0e827-0c2e-407e-bb0c-a3723f3e7388.png",
-  "earbuds": "/lovable-uploads/1aa5d768-fc23-44d4-b6f7-7deef3937dbb.png"
+  "earbuds": "/lovable-uploads/1aa5d768-fc23-44d4-b6f7-7deef3937dbb.png",
+  "accessories": "/lovable-uploads/d92ed3a5-629b-4d24-90b5-463e71bedcf0.png",
+  "vinyl": "/lovable-uploads/f04ff4df-a866-4003-b693-420a3439e10a.png"
 };
 const Categories = () => {
   return <section id="categories" className="py-20 md:py-32 bg-white/50 relative overflow-hidden">
