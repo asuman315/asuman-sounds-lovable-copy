@@ -37,15 +37,19 @@ export interface Category {
 export const adaptSupabaseProduct = (product: any): Product => {
   return {
     id: product.id,
-    title: product.name, // Map name to title for UI compatibility
-    name: product.name,
-    description: product.description,
-    price: product.price,
-    currency: "USD", // Default currency
-    stock_count: 0,   // Default stock count
-    is_featured: false, // Default is_featured
+    title: product.title || product.name, // Use title if available, otherwise use name
+    name: product.name || product.title, // Use name if available, otherwise use title
+    description: product.description || "",
+    price: product.price || 0,
+    currency: product.currency || "USD", 
+    original_price: product.original_price,
+    comparable_price: product.comparable_price,
+    stock_count: product.stock_count || 0,
+    is_featured: product.is_featured || false,
+    category: product.category,
     created_at: product.created_at,
     updated_at: product.updated_at,
+    user_id: product.user_id,
     image_url: product.image_url,
   };
 };

@@ -4,112 +4,207 @@ import { Product, ProductImage, Category, adaptSupabaseProduct } from "@/types/p
 import { products as mockProducts } from "@/data/products";
 
 export const getProducts = async (): Promise<Product[]> => {
-  // Use mock data for now since we need to adapt the database schema
-  return mockProducts;
-
-  // Uncomment when database schema is updated:
-  /*
   const { data: products, error: productsError } = await supabase
     .from('products')
-    .select('*');
+    .select(`
+      *,
+      product_images(*)
+    `);
   
   if (productsError) {
     console.error("Error fetching products:", productsError);
-    return [];
+    return mockProducts; // Fallback to mock data if there's an error
   }
 
-  // Adapt the products to our interface
-  return products.map(product => adaptSupabaseProduct(product));
-  */
+  // If no products found in database, use mock data
+  if (!products || products.length === 0) {
+    console.log("No products found in database, using mock data");
+    return mockProducts;
+  }
+
+  // Map database products to our Product interface
+  return products.map(product => {
+    const adaptedProduct = adaptSupabaseProduct(product);
+    
+    // Add images from the joined product_images
+    if (product.product_images && product.product_images.length > 0) {
+      adaptedProduct.images = product.product_images.map((img: any) => ({
+        id: img.id,
+        product_id: img.product_id,
+        image_url: img.image_url,
+        is_main: img.is_main,
+        created_at: img.created_at,
+        updated_at: img.updated_at
+      }));
+    }
+    
+    return adaptedProduct;
+  });
 };
 
 export const getProductById = async (productId: string): Promise<Product | null> => {
-  // Use mock data for now
-  const product = mockProducts.find(p => p.id === productId);
-  return product || null;
-
-  // Uncomment when database schema is updated:
-  /*
   const { data: product, error: productError } = await supabase
     .from('products')
-    .select('*')
+    .select(`
+      *,
+      product_images(*)
+    `)
     .eq('id', productId)
-    .single();
+    .maybeSingle();
   
   if (productError) {
     console.error("Error fetching product:", productError);
-    return null;
+    // Fallback to mock data
+    return mockProducts.find(p => p.id === productId) || null;
+  }
+
+  if (!product) {
+    console.log(`No product found with id ${productId}, using mock data`);
+    return mockProducts.find(p => p.id === productId) || null;
   }
 
   // Adapt the product to our interface
-  return adaptSupabaseProduct(product);
-  */
+  const adaptedProduct = adaptSupabaseProduct(product);
+  
+  // Add images from the joined product_images
+  if (product.product_images && product.product_images.length > 0) {
+    adaptedProduct.images = product.product_images.map((img: any) => ({
+      id: img.id,
+      product_id: img.product_id,
+      image_url: img.image_url,
+      is_main: img.is_main,
+      created_at: img.created_at,
+      updated_at: img.updated_at
+    }));
+  }
+  
+  return adaptedProduct;
 };
 
 export const getFeaturedProducts = async (): Promise<Product[]> => {
-  // Use mock data for now
-  return mockProducts.filter(p => p.is_featured);
-
-  // Uncomment when database schema is updated:
-  /*
   const { data: products, error: productsError } = await supabase
     .from('products')
-    .select('*')
+    .select(`
+      *,
+      product_images(*)
+    `)
     .eq('is_featured', true);
   
   if (productsError) {
     console.error("Error fetching featured products:", productsError);
-    return [];
+    // Fallback to mock data
+    return mockProducts.filter(p => p.is_featured);
   }
 
-  // Adapt the products to our interface
-  return products.map(product => adaptSupabaseProduct(product));
-  */
+  if (!products || products.length === 0) {
+    console.log("No featured products found in database, using mock data");
+    return mockProducts.filter(p => p.is_featured);
+  }
+
+  // Map database products to our Product interface
+  return products.map(product => {
+    const adaptedProduct = adaptSupabaseProduct(product);
+    
+    // Add images from the joined product_images
+    if (product.product_images && product.product_images.length > 0) {
+      adaptedProduct.images = product.product_images.map((img: any) => ({
+        id: img.id,
+        product_id: img.product_id,
+        image_url: img.image_url,
+        is_main: img.is_main,
+        created_at: img.created_at,
+        updated_at: img.updated_at
+      }));
+    }
+    
+    return adaptedProduct;
+  });
 };
 
 export const getProductsByCategory = async (categoryId: string): Promise<Product[]> => {
-  // Use mock data for now
-  return mockProducts.filter(p => p.category === categoryId);
-
-  // Uncomment when database schema is updated:
-  /*
   const { data: products, error: productsError } = await supabase
     .from('products')
-    .select('*')
+    .select(`
+      *,
+      product_images(*)
+    `)
     .eq('category', categoryId);
   
   if (productsError) {
     console.error("Error fetching products by category:", productsError);
-    return [];
+    // Fallback to mock data
+    return mockProducts.filter(p => p.category === categoryId);
   }
 
-  // Adapt the products to our interface
-  return products.map(product => adaptSupabaseProduct(product));
-  */
+  if (!products || products.length === 0) {
+    console.log(`No products found for category ${categoryId}, using mock data`);
+    return mockProducts.filter(p => p.category === categoryId);
+  }
+
+  // Map database products to our Product interface
+  return products.map(product => {
+    const adaptedProduct = adaptSupabaseProduct(product);
+    
+    // Add images from the joined product_images
+    if (product.product_images && product.product_images.length > 0) {
+      adaptedProduct.images = product.product_images.map((img: any) => ({
+        id: img.id,
+        product_id: img.product_id,
+        image_url: img.image_url,
+        is_main: img.is_main,
+        created_at: img.created_at,
+        updated_at: img.updated_at
+      }));
+    }
+    
+    return adaptedProduct;
+  });
 };
 
 export const searchProducts = async (query: string): Promise<Product[]> => {
-  // Use mock data for now
-  return mockProducts.filter(p => 
-    p.title?.toLowerCase().includes(query.toLowerCase()) || 
-    p.description.toLowerCase().includes(query.toLowerCase())
-  );
-
-  // Uncomment when database schema is updated:
-  /*
   const { data: products, error: productsError } = await supabase
     .from('products')
-    .select('*')
-    .or(`name.ilike.%${query}%,description.ilike.%${query}%`);
+    .select(`
+      *,
+      product_images(*)
+    `)
+    .or(`title.ilike.%${query}%,description.ilike.%${query}%`);
   
   if (productsError) {
     console.error("Error searching products:", productsError);
-    return [];
+    // Fallback to mock data
+    return mockProducts.filter(p => 
+      p.title?.toLowerCase().includes(query.toLowerCase()) || 
+      p.description.toLowerCase().includes(query.toLowerCase())
+    );
   }
 
-  // Adapt the products to our interface
-  return products.map(product => adaptSupabaseProduct(product));
-  */
+  if (!products || products.length === 0) {
+    console.log(`No products found matching query '${query}', using mock data`);
+    return mockProducts.filter(p => 
+      p.title?.toLowerCase().includes(query.toLowerCase()) || 
+      p.description.toLowerCase().includes(query.toLowerCase())
+    );
+  }
+
+  // Map database products to our Product interface
+  return products.map(product => {
+    const adaptedProduct = adaptSupabaseProduct(product);
+    
+    // Add images from the joined product_images
+    if (product.product_images && product.product_images.length > 0) {
+      adaptedProduct.images = product.product_images.map((img: any) => ({
+        id: img.id,
+        product_id: img.product_id,
+        image_url: img.image_url,
+        is_main: img.is_main,
+        created_at: img.created_at,
+        updated_at: img.updated_at
+      }));
+    }
+    
+    return adaptedProduct;
+  });
 };
 
 // Map database categories to display names
