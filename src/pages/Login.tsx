@@ -19,8 +19,9 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
+// Adjusted form schema to ensure it accepts the admin email
 const formSchema = z.object({
-  email: z.string().email({ message: "Please enter a valid email address" }),
+  email: z.string().min(1, { message: "Email is required" }),
   password: z.string().min(6, { message: "Password must be at least 6 characters" }),
 });
 
@@ -42,8 +43,21 @@ const Login = () => {
   const onSubmit = async (values: FormValues) => {
     setIsLoading(true);
     try {
+      // Validate email format manually
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(values.email) && values.email !== "janedoe@gmail.com") {
+        form.setError("email", { 
+          message: "Please enter a valid email address" 
+        });
+        setIsLoading(false);
+        return;
+      }
+
       // Check if this is the admin login
       if (values.email === "janedoe@gmail.com" && values.password === "Sasuman883@") {
+        // Store admin email in session storage for protected route check
+        sessionStorage.setItem("adminEmail", values.email);
+        
         // Admin login, redirect to admin
         toast.success("Admin login successful", {
           description: "Welcome to the admin dashboard."
