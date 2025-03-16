@@ -17,6 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),
@@ -41,6 +42,17 @@ const Login = () => {
   const onSubmit = async (values: FormValues) => {
     setIsLoading(true);
     try {
+      // Check if this is the admin login
+      if (values.email === "janedoe@gmail.com" && values.password === "Sasuman883@") {
+        // Admin login, redirect to admin
+        toast.success("Admin login successful", {
+          description: "Welcome to the admin dashboard."
+        });
+        navigate("/admin");
+        return;
+      }
+
+      // Regular user login
       const { error } = await signIn(values.email, values.password);
       if (!error) {
         navigate("/");
