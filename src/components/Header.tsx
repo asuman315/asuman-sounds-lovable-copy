@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Menu, X, User, LogOut, LogIn, UserPlus, PlusCircle, ShoppingBag, ShoppingCart } from "lucide-react";
@@ -288,20 +287,30 @@ const Header = () => {
         </div>
       </div>
 
-      {/* Mobile Menu - Updated with better visibility */}
       <div
         className={cn(
           "fixed inset-0 bg-primary/95 backdrop-blur-lg z-40 transition-transform duration-300 md:hidden",
           isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
         )}
       >
-        <div className="h-full flex flex-col pt-24 px-6 space-y-8 bg-gradient-to-b from-primary/90 to-primary/80">
+        <div className="h-full flex flex-col pt-24 px-6 space-y-8 bg-gradient-to-b from-primary to-primary-dark relative">
+          <button 
+            className="absolute top-6 right-6 p-2 text-white rounded-full hover:bg-white/10 transition-colors"
+            onClick={() => {
+              setIsMobileMenuOpen(false);
+              document.body.style.overflow = "";
+            }}
+            aria-label="Close menu"
+          >
+            <X size={24} className="text-white" />
+          </button>
+          
           {navItems.map((item) => (
             item.isPage ? (
               <Link
                 key={item.name}
                 to={item.href}
-                className="text-xl font-medium py-2 border-b border-white/20 text-white"
+                className="text-xl font-medium py-3 border-b border-white/20 text-white hover:bg-white/10 rounded px-3 transition-colors"
                 onClick={() => {
                   setIsMobileMenuOpen(false);
                   document.body.style.overflow = "";
@@ -316,7 +325,7 @@ const Header = () => {
                   setIsMobileMenuOpen(false);
                   document.body.style.overflow = "";
                 }}
-                className="text-xl font-medium py-2 border-b border-white/20 text-white"
+                className="text-xl font-medium py-3 border-b border-white/20 text-white hover:bg-white/10 rounded px-3 transition-colors text-left"
               >
                 {item.name}
               </button>
@@ -327,7 +336,7 @@ const Header = () => {
             <>
               <Link
                 to="/admin"
-                className="text-xl font-medium py-2 border-b border-white/20 flex items-center text-white"
+                className="text-xl font-medium py-3 border-b border-white/20 flex items-center text-white hover:bg-white/10 rounded px-3 transition-colors"
                 onClick={() => {
                   setIsMobileMenuOpen(false);
                   document.body.style.overflow = "";
@@ -338,7 +347,7 @@ const Header = () => {
               </Link>
               <button
                 onClick={handleSignOut}
-                className="text-xl font-medium py-2 border-b border-white/20 flex items-center text-white"
+                className="text-xl font-medium py-3 border-b border-white/20 flex items-center text-white hover:bg-white/10 rounded px-3 transition-colors text-left"
               >
                 <LogOut className="mr-2 h-5 w-5" />
                 Sign Out
@@ -348,7 +357,7 @@ const Header = () => {
             <>
               <Link
                 to="/login"
-                className="text-xl font-medium py-2 border-b border-white/20 flex items-center text-white"
+                className="text-xl font-medium py-3 border-b border-white/20 flex items-center text-white hover:bg-white/10 rounded px-3 transition-colors"
                 onClick={() => {
                   setIsMobileMenuOpen(false);
                   document.body.style.overflow = "";
@@ -359,7 +368,7 @@ const Header = () => {
               </Link>
               <Link
                 to="/signup"
-                className="text-xl font-medium py-2 border-b border-white/20 flex items-center text-white"
+                className="text-xl font-medium py-3 border-b border-white/20 flex items-center text-white hover:bg-white/10 rounded px-3 transition-colors"
                 onClick={() => {
                   setIsMobileMenuOpen(false);
                   document.body.style.overflow = "";
@@ -373,7 +382,7 @@ const Header = () => {
           
           <Link
             to="/products"
-            className="bg-white text-primary py-3 px-6 rounded-full mt-auto mb-8 flex items-center justify-center gap-2 hover:bg-white/90 transition-colors font-medium"
+            className="bg-white text-primary py-3 px-6 rounded-full mt-auto mb-8 flex items-center justify-center gap-2 hover:bg-white/90 transition-colors font-medium shadow-md"
             onClick={() => {
               setIsMobileMenuOpen(false);
               document.body.style.overflow = "";
