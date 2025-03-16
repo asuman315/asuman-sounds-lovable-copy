@@ -27,18 +27,28 @@ serve(async (req) => {
     const amount = items.reduce((total, item) => total + item.price * item.quantity, 0);
     
     // Format line items for Stripe
-    const lineItems = items.map(item => ({
-      quantity: item.quantity,
-      price_data: {
-        currency: 'usd',
-        unit_amount: Math.round(item.price * 100), // Convert to cents
-        product_data: {
-          name: item.title,
-          description: item.description || '',
-          images: item.imageUrl ? [item.imageUrl] : [],
+    const lineItems = items.map(item => {
+      // Default to USD if not UGX
+      const currency = item.currency === 'UGX' ? 'usd' : (item.currency?.toLowerCase() || 'usd');
+      
+      // If UGX, convert to USD for Stripe (this is a simplified conversion that should be replaced with a real exchange rate)
+      const unitAmount = currency === 'usd' && item.currency === 'UGX' 
+        ? Math.round((item.price / 3700) * 100) // Simplified UGX to USD conversion
+        : Math.round(item.price * 100);
+      
+      return {
+        quantity: item.quantity,
+        price_data: {
+          currency: currency,
+          unit_amount: unitAmount,
+          product_data: {
+            name: item.title,
+            description: item.description || '',
+            images: item.imageUrl ? [item.imageUrl] : [],
+          },
         },
-      },
-    }));
+      };
+    });
 
     // Create Stripe Checkout Session
     const session = await stripe.checkout.sessions.create({

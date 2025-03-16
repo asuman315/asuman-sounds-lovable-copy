@@ -7,6 +7,14 @@ import { Button } from "@/components/ui/button";
 import { Product } from "@/types/product";
 import { useCart } from "@/contexts/CartContext";
 
+// Sample product images
+const SAMPLE_PRODUCT_IMAGES = [
+  "/lovable-uploads/99342f43-c8de-4064-af0c-1cd5a400b65a.png",
+  "/lovable-uploads/3d1d0e5c-96c4-4d43-9a3b-89d78970f0e6.png",
+  "/lovable-uploads/44eec910-e8b9-4b2c-ad86-f171bd68094f.png",
+  "/lovable-uploads/7453c3c5-6ebc-4670-9a26-31e1a86dce55.png"
+];
+
 interface FeaturedProductProps {
   product: Product;
   index: number;
@@ -33,15 +41,22 @@ const FeaturedProduct = ({ product, index }: FeaturedProductProps) => {
     return product.price;
   };
   
-  const formattedPrice = new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: product.currency || 'USD',
-  }).format(calculateDiscountedPrice());
+  // Handle Ugandan Shillings formatting
+  const formattedPrice = product.currency === 'UGX' 
+    ? `USh ${new Intl.NumberFormat('en-US').format(calculateDiscountedPrice())}`
+    : new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: product.currency || 'USD',
+      }).format(calculateDiscountedPrice());
   
-  const originalPrice = product.original_price ? new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: product.currency || 'USD',
-  }).format(product.original_price) : null;
+  const originalPrice = product.original_price 
+    ? (product.currency === 'UGX' 
+        ? `USh ${new Intl.NumberFormat('en-US').format(product.original_price)}`
+        : new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: product.currency || 'USD',
+          }).format(product.original_price)) 
+    : null;
   
   // For discount percentage calculation, we should use comparable_price if available
   // This reflects the market price comparison
@@ -50,9 +65,18 @@ const FeaturedProduct = ({ product, index }: FeaturedProductProps) => {
     (product.original_price && product.original_price > product.price ? 
       Math.round(((product.original_price - product.price) / product.original_price) * 100) : null);
   
-  const mainImage = product.images && product.images.length > 0 ? 
-    product.images.find(img => img.is_main)?.image_url || product.images[0].image_url : 
-    'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3';
+  // Get product image - if none available, use sample images based on product ID
+  const getProductImage = () => {
+    if (product.images && product.images.length > 0) {
+      return product.images.find(img => img.is_main)?.image_url || product.images[0].image_url;
+    } else {
+      // Use a consistent image based on the product ID
+      const index = product.id.charCodeAt(0) % SAMPLE_PRODUCT_IMAGES.length;
+      return SAMPLE_PRODUCT_IMAGES[index];
+    }
+  };
+  
+  const mainImage = getProductImage();
 
   // Format the description by removing HTML tags and limiting length
   const formatDescription = (description: string) => {
