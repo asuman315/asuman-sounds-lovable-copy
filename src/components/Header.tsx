@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Menu, X, User, LogOut, LogIn, UserPlus, PlusCircle, ShoppingBag, ShoppingCart } from "lucide-react";
@@ -288,14 +287,24 @@ const Header = () => {
         </div>
       </div>
 
-      {/* Mobile Menu - Fixed visibility issues */}
       <div
         className={cn(
           "fixed inset-0 bg-blue-600 z-40 transition-transform duration-300 md:hidden",
           isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
         )}
       >
-        <div className="h-full flex flex-col pt-24 px-6 space-y-6">
+        <div className="h-full flex flex-col pt-24 px-6 space-y-6 relative">
+          <button
+            onClick={() => {
+              setIsMobileMenuOpen(false);
+              document.body.style.overflow = "";
+            }}
+            className="absolute top-6 right-6 p-2 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
+            aria-label="Close menu"
+          >
+            <X size={24} />
+          </button>
+          
           {navItems.map((item) => (
             item.isPage ? (
               <Link
