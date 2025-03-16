@@ -288,13 +288,14 @@ const Header = () => {
         </div>
       </div>
 
+      {/* Mobile Menu - Updated with better visibility */}
       <div
         className={cn(
-          "fixed inset-0 bg-primary/95 backdrop-blur-md z-40 transition-transform duration-300 md:hidden text-white",
+          "fixed inset-0 bg-primary/95 backdrop-blur-lg z-40 transition-transform duration-300 md:hidden",
           isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
         )}
       >
-        <div className="h-full flex flex-col pt-24 px-6 space-y-8">
+        <div className="h-full flex flex-col pt-24 px-6 space-y-8 bg-gradient-to-b from-primary/90 to-primary/80">
           {navItems.map((item) => (
             item.isPage ? (
               <Link
@@ -372,7 +373,7 @@ const Header = () => {
           
           <Link
             to="/products"
-            className="bg-white/20 text-white py-3 px-6 rounded-full mt-auto mb-8 flex items-center justify-center gap-2 hover:bg-white/30 transition-colors"
+            className="bg-white text-primary py-3 px-6 rounded-full mt-auto mb-8 flex items-center justify-center gap-2 hover:bg-white/90 transition-colors font-medium"
             onClick={() => {
               setIsMobileMenuOpen(false);
               document.body.style.overflow = "";
