@@ -1,7 +1,14 @@
+
 import { supabase } from "@/integrations/supabase/client";
-import { Product, ProductImage, Category } from "@/types/product";
+import { Product, ProductImage, Category, adaptSupabaseProduct } from "@/types/product";
+import { products as mockProducts } from "@/data/products";
 
 export const getProducts = async (): Promise<Product[]> => {
+  // Use mock data for now since we need to adapt the database schema
+  return mockProducts;
+
+  // Uncomment when database schema is updated:
+  /*
   const { data: products, error: productsError } = await supabase
     .from('products')
     .select('*');
@@ -11,29 +18,18 @@ export const getProducts = async (): Promise<Product[]> => {
     return [];
   }
 
-  // Fetch all product images
-  const { data: images, error: imagesError } = await supabase
-    .from('product_images')
-    .select('*');
-
-  if (imagesError) {
-    console.error("Error fetching product images:", imagesError);
-    return products || [];
-  }
-
-  // Map images to products
-  const productsWithImages = products?.map(product => {
-    const productImages = images?.filter(img => img.product_id === product.id) || [];
-    return {
-      ...product,
-      images: productImages,
-    };
-  }) || [];
-
-  return productsWithImages;
+  // Adapt the products to our interface
+  return products.map(product => adaptSupabaseProduct(product));
+  */
 };
 
 export const getProductById = async (productId: string): Promise<Product | null> => {
+  // Use mock data for now
+  const product = mockProducts.find(p => p.id === productId);
+  return product || null;
+
+  // Uncomment when database schema is updated:
+  /*
   const { data: product, error: productError } = await supabase
     .from('products')
     .select('*')
@@ -45,25 +41,17 @@ export const getProductById = async (productId: string): Promise<Product | null>
     return null;
   }
 
-  // Fetch images for this product
-  const { data: images, error: imagesError } = await supabase
-    .from('product_images')
-    .select('*')
-    .eq('product_id', productId);
-
-  if (imagesError) {
-    console.error("Error fetching product images:", imagesError);
-    return product;
-  }
-
-  // Add images to the product
-  return {
-    ...product,
-    images: images || [],
-  };
+  // Adapt the product to our interface
+  return adaptSupabaseProduct(product);
+  */
 };
 
 export const getFeaturedProducts = async (): Promise<Product[]> => {
+  // Use mock data for now
+  return mockProducts.filter(p => p.is_featured);
+
+  // Uncomment when database schema is updated:
+  /*
   const { data: products, error: productsError } = await supabase
     .from('products')
     .select('*')
@@ -74,35 +62,17 @@ export const getFeaturedProducts = async (): Promise<Product[]> => {
     return [];
   }
 
-  // Fetch images for featured products
-  if (products && products.length > 0) {
-    const productIds = products.map(p => p.id);
-    const { data: images, error: imagesError } = await supabase
-      .from('product_images')
-      .select('*')
-      .in('product_id', productIds);
-
-    if (imagesError) {
-      console.error("Error fetching product images:", imagesError);
-      return products;
-    }
-
-    // Map images to products
-    const productsWithImages = products.map(product => {
-      const productImages = images?.filter(img => img.product_id === product.id) || [];
-      return {
-        ...product,
-        images: productImages,
-      };
-    });
-
-    return productsWithImages;
-  }
-
-  return products || [];
+  // Adapt the products to our interface
+  return products.map(product => adaptSupabaseProduct(product));
+  */
 };
 
 export const getProductsByCategory = async (categoryId: string): Promise<Product[]> => {
+  // Use mock data for now
+  return mockProducts.filter(p => p.category === categoryId);
+
+  // Uncomment when database schema is updated:
+  /*
   const { data: products, error: productsError } = await supabase
     .from('products')
     .select('*')
@@ -113,71 +83,33 @@ export const getProductsByCategory = async (categoryId: string): Promise<Product
     return [];
   }
 
-  // Fetch images for these products
-  if (products && products.length > 0) {
-    const productIds = products.map(p => p.id);
-    const { data: images, error: imagesError } = await supabase
-      .from('product_images')
-      .select('*')
-      .in('product_id', productIds);
-
-    if (imagesError) {
-      console.error("Error fetching product images:", imagesError);
-      return products;
-    }
-
-    // Map images to products
-    const productsWithImages = products.map(product => {
-      const productImages = images?.filter(img => img.product_id === product.id) || [];
-      return {
-        ...product,
-        images: productImages,
-      };
-    });
-
-    return productsWithImages;
-  }
-
-  return products || [];
+  // Adapt the products to our interface
+  return products.map(product => adaptSupabaseProduct(product));
+  */
 };
 
 export const searchProducts = async (query: string): Promise<Product[]> => {
+  // Use mock data for now
+  return mockProducts.filter(p => 
+    p.title?.toLowerCase().includes(query.toLowerCase()) || 
+    p.description.toLowerCase().includes(query.toLowerCase())
+  );
+
+  // Uncomment when database schema is updated:
+  /*
   const { data: products, error: productsError } = await supabase
     .from('products')
     .select('*')
-    .or(`title.ilike.%${query}%,description.ilike.%${query}%`);
+    .or(`name.ilike.%${query}%,description.ilike.%${query}%`);
   
   if (productsError) {
     console.error("Error searching products:", productsError);
     return [];
   }
 
-  // Fetch images for these products
-  if (products && products.length > 0) {
-    const productIds = products.map(p => p.id);
-    const { data: images, error: imagesError } = await supabase
-      .from('product_images')
-      .select('*')
-      .in('product_id', productIds);
-
-    if (imagesError) {
-      console.error("Error fetching product images:", imagesError);
-      return products;
-    }
-
-    // Map images to products
-    const productsWithImages = products.map(product => {
-      const productImages = images?.filter(img => img.product_id === product.id) || [];
-      return {
-        ...product,
-        images: productImages,
-      };
-    });
-
-    return productsWithImages;
-  }
-
-  return products || [];
+  // Adapt the products to our interface
+  return products.map(product => adaptSupabaseProduct(product));
+  */
 };
 
 // Map database categories to display names
