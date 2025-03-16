@@ -289,11 +289,11 @@ const Header = () => {
 
       <div
         className={cn(
-          "fixed inset-0 bg-primary/95 backdrop-blur-lg z-40 transition-transform duration-300 md:hidden",
+          "fixed inset-0 bg-primary/95 backdrop-blur-lg h-screen  z-40 transition-transform duration-300 md:hidden",
           isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
         )}
       >
-        <div className="h-full flex flex-col pt-24 px-6 space-y-8 bg-gradient-to-b from-primary to-primary-dark relative">
+        <div className="h-full flex flex-col pt-24 px-6 space-y-8 bg-gradient-to-b from-primary/60 to-primary/80 relative">
           <button 
             className="absolute top-6 right-6 p-2 text-white rounded-full hover:bg-white/10 transition-colors"
             onClick={() => {
