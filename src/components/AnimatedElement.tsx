@@ -1,5 +1,5 @@
 
-import React, { useEffect, useRef, useState, forwardRef } from "react";
+import React, { useEffect, useRef, useState, forwardRef, ForwardedRef } from "react";
 import { cn } from "@/lib/utils";
 
 interface AnimatedElementProps {
@@ -26,16 +26,28 @@ const AnimatedElement = forwardRef<HTMLDivElement, AnimatedElementProps>(({
   const localRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
   
-  // Use provided ref or local ref
-  const elementRef = ref || localRef;
+  // Combine the forwarded ref with our local ref
+  const setRefs = (element: HTMLDivElement | null) => {
+    // Update internal ref
+    if (localRef) {
+      (localRef as React.MutableRefObject<HTMLDivElement | null>).current = element;
+    }
+    
+    // Forward the ref
+    if (typeof ref === 'function') {
+      ref(element);
+    } else if (ref) {
+      ref.current = element;
+    }
+  };
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
           setIsVisible(true);
-          if (once && elementRef.current) {
-            observer.unobserve(elementRef.current);
+          if (once && localRef.current) {
+            observer.unobserve(localRef.current);
           }
         } else if (!once) {
           setIsVisible(false);
@@ -47,7 +59,7 @@ const AnimatedElement = forwardRef<HTMLDivElement, AnimatedElementProps>(({
       }
     );
 
-    const currentRef = elementRef.current;
+    const currentRef = localRef.current;
     if (currentRef) {
       observer.observe(currentRef);
     }
@@ -57,11 +69,11 @@ const AnimatedElement = forwardRef<HTMLDivElement, AnimatedElementProps>(({
         observer.unobserve(currentRef);
       }
     };
-  }, [once, threshold, elementRef]);
+  }, [once, threshold]);
 
   return (
     <div
-      ref={elementRef}
+      ref={setRefs}
       className={cn(
         isVisible ? `animate-${animation}` : "opacity-0",
         className
