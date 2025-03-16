@@ -50,12 +50,12 @@ const Hero = () => {
                 Sound
                 <AnimatedElement 
                   animation="float" 
-                  className="absolute -right-24 top-1/2 -translate-y-1/2 -z-10 opacity-80 hidden md:block"
+                  className="absolute -left-16 top-1/2 -translate-y-1/2 -z-10 opacity-80 hidden md:block"
                 >
                   <img 
                     src="/lovable-uploads/0c8ad1fb-ccf6-4eb9-a5b2-b50e2cf65dbb.png" 
                     alt="Premium headphones" 
-                    className="w-40 h-40 object-contain transform rotate-12"
+                    className="w-56 h-56 object-contain transform rotate-12"
                   />
                 </AnimatedElement>
               </span> Like Never Before
