@@ -52,7 +52,7 @@ const Categories = () => {
                 className="group"
               >
                 <Link 
-                  to={`/products?category=${category.id}`} 
+                  to={`/category/${category.id}`} 
                   className="h-full"
                 >
                   <div className="glass-card h-full flex flex-col items-center justify-center p-6 text-center transition-all duration-300 group-hover:shadow-soft-lg">

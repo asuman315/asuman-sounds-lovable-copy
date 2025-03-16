@@ -122,6 +122,11 @@ export const getFeaturedProducts = async (): Promise<Product[]> => {
 };
 
 export const getProductsByCategory = async (categoryId: string): Promise<Product[]> => {
+  // Only proceed with the query if categoryId is valid
+  if (!categoryId || categoryId === 'all') {
+    return getProducts(); // Return all products if no category specified
+  }
+  
   const { data: products, error: productsError } = await supabase
     .from('products')
     .select(`
@@ -207,7 +212,7 @@ export const searchProducts = async (query: string): Promise<Product[]> => {
   });
 };
 
-// Map database categories to display names
+// Map category IDs to display names
 export const categories: Category[] = [
   { id: "headphones", name: "Headphones" },
   { id: "speakers", name: "Speakers" },
