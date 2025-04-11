@@ -1,8 +1,10 @@
 
+import { useState, useRef, useEffect } from "react";
 import AnimatedElement from "./AnimatedElement";
 import { ChevronDown } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { Button } from "./ui/button";
 
 // Product categories - same as in Admin.tsx
 const productCategories = [
@@ -15,6 +17,9 @@ const productCategories = [
 
 const Hero = () => {
   const { user } = useAuth();
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const headphonesRef = useRef<HTMLDivElement>(null);
+  const [isHovering, setIsHovering] = useState(false);
   
   const scrollToNext = () => {
     const featuresSection = document.getElementById("features");
@@ -23,10 +28,26 @@ const Hero = () => {
     }
   };
 
+  // Handle mouse movement for the floating headphones
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!headphonesRef.current || !isHovering) return;
+    
+    const { left, top, width, height } = headphonesRef.current.getBoundingClientRect();
+    const centerX = left + width / 2;
+    const centerY = top + height / 2;
+    
+    // Calculate relative mouse position from center of element
+    const relativeX = (e.clientX - centerX) / 15;
+    const relativeY = (e.clientY - centerY) / 15;
+    
+    setMousePosition({ x: relativeX, y: relativeY });
+  };
+
   return (
     <section
       id="hero"
       className="min-h-screen-dynamic flex flex-col justify-center items-center relative overflow-hidden bg-gradient-to-br from-white to-secondary/30 pt-24 md:pt-28"
+      onMouseMove={handleMouseMove}
     >
       {/* Decorative elements */}
       <div className="absolute inset-0 overflow-hidden">
@@ -36,16 +57,38 @@ const Hero = () => {
       </div>
 
       <div className="container max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
-        <div className="flex flex-col items-center text-center max-w-4xl mx-auto">
+        <div className="flex flex-col items-center text-center max-w-4xl mx-auto relative">
           <AnimatedElement animation="fade-in" delay={100}>
             <span className="inline-block px-4 py-1.5 rounded-full bg-primary/10 text-primary font-medium text-sm mb-6">
               Premium Audio Experience
             </span>
           </AnimatedElement>
 
-          <AnimatedElement animation="fade-in" delay={300}>
+          <AnimatedElement animation="fade-in" delay={300} className="relative">
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight md:leading-tight mb-6 text-balance">
-              Experience <span className="text-gradient">Sound</span> Like Never Before
+              Experience <span className="text-gradient relative">
+                Sound
+                <AnimatedElement 
+                  animation="float" 
+                  className="absolute md:-left-[500px] -z-10 opacity-80 block w-[400px] h-[400px] top-[-20px]"
+                  ref={headphonesRef}
+                  onMouseEnter={() => setIsHovering(true)}
+                  onMouseLeave={() => {
+                    setIsHovering(false);
+                    setMousePosition({ x: 0, y: 0 });
+                  }}
+                >
+                  <img 
+                    src="/lovable-uploads/0c8ad1fb-ccf6-4eb9-a5b2-b50e2cf65dbb.png" 
+                    alt="Premium headphones" 
+                    className="object-contain transform"
+                    style={{
+                      transform: `translate(${mousePosition.x}px, ${mousePosition.y}px) ${isHovering ? 'scale(1.05)' : ''}`,
+                      transition: isHovering ? 'transform 0.1s ease-out' : 'transform 0.3s ease-out',
+                    }}
+                  />
+                </AnimatedElement>
+              </span> Like Never Before
             </h1>
           </AnimatedElement>
 
@@ -58,23 +101,9 @@ const Hero = () => {
 
           <AnimatedElement animation="fade-in" delay={700}>
             <div className="flex flex-col sm:flex-row gap-4 mt-4">
-              {user ? (
-                <button className="btn-primary">
-                  Shop Collection
-                </button>
-              ) : (
-                <>
-                  <Link to="/signup" className="btn-primary">
-                    Sign Up
-                  </Link>
-                  <Link to="/login" className="btn-secondary">
-                    Sign In
-                  </Link>
-                </>
-              )}
-              <button className="btn-secondary">
-                Learn More
-              </button>
+              <Link to="/products" className="btn-primary flex items-center justify-center gap-2">
+                Shop Now
+              </Link>
             </div>
           </AnimatedElement>
         </div>
@@ -85,8 +114,8 @@ const Hero = () => {
               <div className="w-full h-full rounded-lg overflow-hidden bg-gradient-to-br from-gray-900 to-gray-800 flex items-center justify-center">
                 <div className="relative">
                   <img 
-                    src="/lovable-uploads/dda80657-f174-4543-a9c9-c0216afa2891.png" 
-                    alt="Premium blue headphones" 
+                    src="/lovable-uploads/310ec201-7407-47d1-a118-e2bf47c2279a.png" 
+                    alt="Premium headphones" 
                     className="max-w-xs md:max-w-md lg:max-w-lg mx-auto object-contain transform hover:scale-105 transition-transform duration-500"
                   />
                   <div className="absolute -inset-8 bg-primary/10 rounded-full filter blur-xl opacity-30 animate-pulse-slow"></div>

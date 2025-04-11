@@ -20,17 +20,22 @@ import {
   RotateCcw
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import { 
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger 
 } from "@/components/ui/collapsible";
-import { Card, CardContent } from "@/components/ui/card";
 import ProductGallery from "@/components/ProductGallery";
 import ProductSpecifications from "@/components/ProductSpecifications";
 import ProductReviews from "@/components/ProductReviews";
 import RelatedProducts from "@/components/RelatedProducts";
+
+const SAMPLE_PRODUCT_IMAGES = [
+  "/lovable-uploads/99342f43-c8de-4064-af0c-1cd5a400b65a.png",
+  "/lovable-uploads/3d1d0e5c-96c4-4d43-9a3b-89d78970f0e6.png",
+  "/lovable-uploads/44eec910-e8b9-4b2c-ad86-f171bd68094f.png",
+  "/lovable-uploads/7453c3c5-6ebc-4670-9a26-31e1a86dce55.png"
+];
 
 const ProductDetails = () => {
   const { productId } = useParams<{ productId: string }>();
@@ -93,19 +98,32 @@ const ProductDetails = () => {
     return description.replace(/<[^>]*>/g, '');
   };
 
-  const productImages = product.images && product.images.length > 0 
-    ? product.images.map(img => img.image_url)
-    : ["https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3"];
+  const getProductImages = () => {
+    if (product.images && product.images.length > 0) {
+      return product.images.map(img => img.image_url);
+    } else {
+      const index = product.id.charCodeAt(0) % SAMPLE_PRODUCT_IMAGES.length;
+      return [SAMPLE_PRODUCT_IMAGES[index]];
+    }
+  };
 
-  const formattedPrice = new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: product.currency || 'USD',
-  }).format(product.price);
+  const productImages = getProductImages();
 
-  const originalPrice = product.comparable_price ? new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: product.currency || 'USD',
-  }).format(product.comparable_price) : null;
+  const formattedPrice = product.currency === 'UGX' 
+    ? `USh ${new Intl.NumberFormat('en-US').format(product.price)}`
+    : new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: product.currency || 'USD',
+      }).format(product.price);
+
+  const originalPrice = product.comparable_price 
+    ? (product.currency === 'UGX' 
+        ? `USh ${new Intl.NumberFormat('en-US').format(product.comparable_price)}`
+        : new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: product.currency || 'USD',
+          }).format(product.comparable_price)) 
+    : null;
 
   const discountPercentage = product.comparable_price && product.comparable_price > product.price ? 
     Math.round(((product.comparable_price - product.price) / product.comparable_price) * 100) : null;

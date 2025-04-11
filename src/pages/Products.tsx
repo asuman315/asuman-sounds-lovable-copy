@@ -140,13 +140,13 @@ const Products = () => {
     <div className="min-h-screen flex flex-col">
       <Header />
       
-      {/* Hero section */}
+      {/* Hero section - Updated with new image */}
       <section className="relative h-[40vh] md:h-[50vh] overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-black/40 z-10"></div>
         <div className="absolute inset-0 z-0">
           <img 
-            src="https://images.unsplash.com/photo-1616627547584-bf28cee262db?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" 
-            alt="Premium speakers and audio equipment" 
+            src="/lovable-uploads/3d1d0e5c-96c4-4d43-9a3b-89d78970f0e6.png" 
+            alt="Premium audio equipment collection" 
             className="w-full h-full object-cover object-center"
           />
         </div>

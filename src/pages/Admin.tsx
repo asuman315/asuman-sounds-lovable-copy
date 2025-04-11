@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -46,7 +45,8 @@ const currencySymbols: Record<string, string> = {
   GBP: "£",
   JPY: "¥",
   CAD: "C$",
-  AUD: "A$"
+  AUD: "A$",
+  UGX: "USh"
 };
 
 // Product categories
@@ -414,6 +414,7 @@ const AdminPage = () => {
                                 <SelectItem value="JPY">JPY (¥)</SelectItem>
                                 <SelectItem value="CAD">CAD (C$)</SelectItem>
                                 <SelectItem value="AUD">AUD (A$)</SelectItem>
+                                <SelectItem value="UGX">UGX (USh)</SelectItem>
                               </SelectContent>
                             </Select>
                             <FormMessage />
