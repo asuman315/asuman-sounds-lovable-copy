@@ -2,43 +2,49 @@
 <html lang="en">
   <head>
     <script
-    id="pixel-js"
-    async 
-    src="https://embqetqnbgbpzkekvuhi.supabase.co/functions/v1/serve-tracking-script"
-    data-pid="9cd39fcc-c7d4-47a2-8643-e1040e8db4c3"
-    data-key="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVtYnFldHFuYmdicHprZWt2dWhpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg5NTg1NzcsImV4cCI6MjA1NDUzNDU3N30.om_wXs8emRG4ooRN1NCtAxbs-CcLZ9gXOeQTR1gGxkI"
-    data-url="https://embqetqnbgbpzkekvuhi.supabase.co"
-    data-version="v1" integrity="sha384-zfzvHZCT42wMgMdeseUygSYYVFcyUIwF9zQvnHGKOxYA/oeP05OLc65kMXDy+5A6" crossorigin="anonymous"
-  ></script>
-  
-  <script>
-  // Initialize the script loader with secure headers
-  (function() {
-    const pixelScript = document.getElementById('pixel-js');
-    if (!pixelScript) return;
-    
-    // Create a custom fetch event listener that adds secure headers
-    const originalFetch = window.fetch;
-    window.fetch = function(url, options = {}) {
-      // Only intercept requests to our tracking endpoint
-      if (url.toString().includes('embqetqnbgbpzkekvuhi.supabase.co/functions/v1')) {
-        options = options || {};
-        options.headers = options.headers || {};
-        
-        // Add secure headers
-        options.headers = {
-          ...options.headers,
-          'data-pid': pixelScript.getAttribute('data-pid'),
-          'data-key': pixelScript.getAttribute('data-key'),
-          'x-pixel-id': pixelScript.getAttribute('data-pid'),
-          'x-api-key': pixelScript.getAttribute('data-key'),
+      id="pixel-js"
+      async
+      src="https://embqetqnbgbpzkekvuhi.supabase.co/functions/v1/serve-tracking-script?pid=5814b3bf-428b-452f-9a01-a8a42d501d15"
+      data-pid="5814b3bf-428b-452f-9a01-a8a42d501d15"
+      data-key="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVtYnFldHFuYmdicHprZWt2dWhpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg5NTg1NzcsImV4cCI6MjA1NDUzNDU3N30.om_wXs8emRG4ooRN1NCtAxbs-CcLZ9gXOeQTR1gGxkI"
+      data-url="https://embqetqnbgbpzkekvuhi.supabase.co"
+      data-version="v1"
+      integrity="sha384-zfzvHZCT42wMgMdeseUygSYYVFcyUIwF9zQvnHGKOxYA/oeP05OLc65kMXDy+5A6"
+      crossorigin="anonymous"
+    ></script>
+
+    <script>
+      // Initialize the script loader with secure headers
+      (function () {
+        const pixelScript = document.getElementById("pixel-js");
+        if (!pixelScript) return;
+
+        // Create a custom fetch event listener that adds secure headers
+        const originalFetch = window.fetch;
+        window.fetch = function (url, options = {}) {
+          // Only intercept requests to our tracking endpoint
+          if (
+            url
+              .toString()
+              .includes("embqetqnbgbpzkekvuhi.supabase.co/functions/v1")
+          ) {
+            options = options || {};
+            options.headers = options.headers || {};
+
+            // Add secure headers
+            options.headers = {
+              ...options.headers,
+              "data-pid": pixelScript.getAttribute("data-pid"),
+              "data-key": pixelScript.getAttribute("data-key"),
+              "x-pixel-id": pixelScript.getAttribute("data-pid"),
+              "x-api-key": pixelScript.getAttribute("data-key"),
+            };
+          }
+
+          return originalFetch.call(this, url, options);
         };
-      }
-      
-      return originalFetch.call(this, url, options);
-    };
-  })();
-  </script>
+      })();
+    </script>
 
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
